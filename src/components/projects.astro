@@ -1,0 +1,182 @@
+---
+import ProjectCard from './project-card.astro';
+import projectsData from '../data/projects.json';
+---
+
+<section id="projects" class="section-container overflow-hidden">
+  <div class="container mx-auto">
+    <div class="mb-16 project-header">
+      <h2 class="text-3xl md:text-4xl font-heading font-bold text-maintext mb-2 flex items-center gap-4">
+          <span class="text-accent">/</span> <span data-i18n="projects.title">Featured Projects</span>
+        </h2>
+      <p class="text-subtext font-body text-sm max-w-md" data-i18n="projects.subtitle">
+        A selection of professional work, published apps, and experimental prototypes.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {projectsData.map((project) => (
+        <ProjectCard project={project} />
+      ))}
+    </div>
+  </div>
+
+  <!-- Project Detail Modal -->
+  <div
+    id="project-modal-overlay"
+    class="fixed inset-0 z-[90] bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4"
+  >
+    <div class="relative w-full max-w-lg max-h-[85vh] overflow-y-auto bg-background border border-white/10 rounded-2xl shadow-2xl">
+      <button
+        id="project-modal-close"
+        type="button"
+        aria-label="Close"
+        class="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-background/80 backdrop-blur-md border border-white/10 flex items-center justify-center text-subtext hover:text-maintext transition-colors"
+      >
+        ✕
+      </button>
+      <div class="p-6">
+        <span id="project-modal-category" class="inline-block text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full border text-accent bg-accent/10 border-accent/20"></span>
+        <h3 id="project-modal-title" class="text-2xl font-heading font-bold text-maintext mt-3"></h3>
+        <p id="project-modal-description" class="text-subtext text-sm font-body mt-3 leading-relaxed"></p>
+        <div id="project-modal-tech" class="flex flex-wrap gap-2 mt-4"></div>
+        <a
+          id="project-modal-link"
+          href="#"
+          target="_blank"
+          class="mt-6 flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-accent/15 border border-accent/40 text-maintext hover:bg-accent/25 transition-all duration-300 text-sm font-body font-semibold"
+        >
+          <span id="project-modal-link-label">View Project</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<style>
+  /* Header Initial State */
+  .project-header {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Cards Initial State */
+  .project-card {
+    opacity: 0; /* Ensuring cards start hidden too */
+    transform: translateY(20px) scale(0.95);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Shared Revealed State */
+  .project-header.reveal,
+  .project-card.reveal {
+    opacity: 1 !important;
+    transform: translateY(0) scale(1);
+  }
+</style>
+
+<script>
+  const initProjectReveal = () => {
+    const header = document.querySelector('.project-header');
+    const cards = document.querySelectorAll('.project-card');
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const target = entry.target as HTMLElement;
+          
+          // Check if the intersecting element is the header
+          if (target.classList.contains('project-header')) {
+            target.classList.add('reveal');
+            observer.unobserve(target);
+          } 
+          // Check if the intersecting element is a project card
+          else if (target.classList.contains('project-card')) {
+            const index = Array.from(cards).indexOf(target);
+            
+            // Stagger effect based on row position (only for cards)
+            setTimeout(() => {
+              target.classList.add('reveal');
+            }, (index % 3) * 150);
+            
+            observer.unobserve(target);
+          }
+        }
+      });
+    }, { 
+      threshold: 0.15, 
+      rootMargin: '0px 0px -10px 0px' 
+    });
+
+    // Observe the header
+    if (header) observer.observe(header);
+    
+    // Observe all cards
+    cards.forEach(card => observer.observe(card));
+  };
+
+  window.addEventListener('load', initProjectReveal);
+
+  // Support for Astro View Transitions
+  document.addEventListener('astro:after-swap', initProjectReveal);
+</script>
+
+<script define:vars={{ projectsData }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.getElementById('project-modal-overlay');
+    const closeBtn = document.getElementById('project-modal-close');
+    const titleEl = document.getElementById('project-modal-title');
+    const categoryEl = document.getElementById('project-modal-category');
+    const descEl = document.getElementById('project-modal-description');
+    const techEl = document.getElementById('project-modal-tech');
+    const linkEl = document.getElementById('project-modal-link');
+    const linkLabelEl = document.getElementById('project-modal-link-label');
+
+    function openModal(project) {
+      if (!overlay) return;
+      if (titleEl) titleEl.textContent = project.title;
+      if (categoryEl) categoryEl.textContent = project.category;
+      if (descEl) descEl.textContent = project.description;
+      if (techEl) {
+        techEl.innerHTML = '';
+        (project.tech || []).forEach((t) => {
+          const span = document.createElement('span');
+          span.className = 'rounded-md text-[10px] px-2 py-1 bg-accent/5 border border-accent/10 text-accent/80';
+          span.textContent = t;
+          techEl.appendChild(span);
+        });
+      }
+      if (linkEl) linkEl.setAttribute('href', project.link);
+      if (linkLabelEl) linkLabelEl.textContent = project.linkLabel || 'View Project';
+
+      overlay.classList.remove('hidden');
+      overlay.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      if (!overlay) return;
+      overlay.classList.add('hidden');
+      overlay.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.project-detail-trigger').forEach((card) => {
+      card.addEventListener('click', () => {
+        const title = card.getAttribute('data-project-title');
+        const project = projectsData.find((p) => p.title === title);
+        if (project) openModal(project);
+      });
+    });
+
+    closeBtn?.addEventListener('click', closeModal);
+    overlay?.addEventListener('click', (e) => {
+      if (e.target === overlay) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+  });
+</script>

@@ -1,0 +1,9 @@
+{
+  "_comment": "Self-hosted background music playlist. Put your mp3 files inside the public/music/ folder with these exact names, and they'll play one after another automatically, looping back to the first after the last ends.",
+  "autoplay": true,
+  "tracks": [
+    { "title": "Track 1", "file": "/music/music.mp3" },
+    { "title": "Track 2", "file": "/music/music2.mp3" },
+    { "title": "Track 3", "file": "/music/music3.mp3" }
+  ]
+}

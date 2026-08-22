@@ -1,0 +1,19 @@
+---
+import FreeFireChecker from './freefire-checker.astro';
+import FreeFireLike from './freefire-like.astro';
+---
+
+<section id="tools" class="section-container overflow-hidden">
+  <div class="container mx-auto">
+    <div class="mb-10">
+      <h2 class="text-3xl md:text-4xl font-heading font-bold text-maintext mb-2 flex items-center gap-4">
+        <span class="text-accent">/</span> <span data-i18n="tools.title">Live Tools</span>
+      </h2>
+      <p class="text-subtext font-body text-sm max-w-xl" data-i18n="tools.subtitle">
+        Check any Free Fire UID, then send 1 like per UID per day. Enter your own UID — nothing is prefilled.
+      </p>
+    </div>
+    <FreeFireChecker />
+    <FreeFireLike />
+  </div>
+</section>

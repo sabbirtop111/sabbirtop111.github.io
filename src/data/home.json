@@ -1,0 +1,102 @@
+{
+  "name": "！ＧＡＭＥＲ ＳＡＢＢＩＲ",
+  "photoUrl": "sabbirtop111.gif",
+  "location": "Chittagong, Bangladesh",
+  "availability": "Available for hire",
+  "description": "A passionate self-taught developer from Barisal, now based in Chittagong. I build games, APIs, and web applications, and I love turning ideas into working products.",
+  "descriptionHtml": "A passionate self-taught developer from Barisal, now based in Chittagong. I build <span class='text-accent font-bold'>games</span>, <span class='text-accent font-bold'>APIs</span>, and <span class='text-accent font-bold'>web applications</span>, and I love turning ideas into working products.",
+  "webpageTitle": "GAMER SABBIR | Game • API • Web Developer",
+  "resumeUrl": "https://drive.google.com/file/d/1N1qh-ZJTwuT4rzgicWZgrWwu_Kz3xDCp/view?usp=drive_link",
+  "_seo_comment": "SEO fields — update these along with your personal info for best search engine visibility.",
+  "jobTitle": "Game Developer • API Developer • Web Developer",
+  "keywords": "Gamer Sabbir, sabbirtop111, Game Developer, API Developer, Web Developer, Discord Bot Developer, Bangladesh",
+  "siteUrl": "https://sabbirtop111.github.io",
+  "lang": "en",
+  "twitterHandle": "",
+  "ogImageUrl": "/placeholder.jpeg",
+  "_comment": "Add your social links below. Leave the 'url' empty to hide the icon. Set 'showInContact' to true or false to control if it appears in the Contact section.",
+  "socials": [
+    {
+      "name": "GitHub",
+      "url": "https://github.com/Gamersabbir",
+      "icon": "mdi:github",
+      "label": "View Profile",
+      "showInContact": true
+    },
+    {
+      "name": "Email",
+      "url": "mailto:sabbirallvideo@gmail.com",
+      "icon": "mdi:email",
+      "label": "Send Email",
+      "showInContact": true
+    },
+    {
+      "name": "WhatsApp",
+      "url": "https://wa.me/8801961243176",
+      "icon": "mdi:whatsapp",
+      "label": "Send Message",
+      "showInContact": true
+    },
+    {
+      "name": "Discord",
+      "url": "https://discord.gg/SfuFVPnNCu",
+      "icon": "mdi:discord",
+      "label": "Join Server",
+      "showInContact": true
+    },
+    {
+      "name": "Facebook",
+      "url": "https://facebook.com/sabbirtop111",
+      "icon": "mdi:facebook",
+      "label": "View Profile",
+      "showInContact": true
+    },
+    {
+      "name": "Instagram",
+      "url": "https://instagram.com/sabbirtop111",
+      "icon": "mdi:instagram",
+      "label": "View Profile",
+      "showInContact": true
+    },
+    {
+      "name": "TikTok",
+      "url": "https://tiktok.com/@sabbirtop111",
+      "icon": "simple-icons:tiktok",
+      "label": "View Profile",
+      "showInContact": true
+    },
+    {
+      "name": "Telegram",
+      "url": "https://t.me/sabbirtop111",
+      "icon": "mdi:telegram",
+      "label": "Send Message",
+      "showInContact": true
+    },
+    {
+      "name": "Spotify",
+      "url": "https://open.spotify.com/user/31apreihbgkfes2sxfzjsw266sse",
+      "icon": "mdi:spotify",
+      "label": "Follow",
+      "showInContact": true
+    },
+    {
+      "name": "Guns.lol",
+      "url": "https://guns.lol/sabbirtop111",
+      "icon": "mdi:link-variant",
+      "label": "View Profile",
+      "showInContact": true
+    }
+  ],
+  "jobTitles": [
+    "Game Developer",
+    "API Developer",
+    "Web Developer",
+    "Discord Bot Developer"
+  ],
+  "badges": [
+    "🇧🇩 Bangladesh",
+    "🎓 CSE Student",
+    "🟢 Available for Projects"
+  ],
+  "descriptionHtmlBn": "বরিশাল থেকে আসা একজন self-taught developer, বর্তমানে থাকেন চট্টগ্রামে। আমি <span class='text-accent font-bold'>গেম</span>, <span class='text-accent font-bold'>API</span>, এবং <span class='text-accent font-bold'>ওয়েব অ্যাপ্লিকেশন</span> বানাই, আইডিয়াকে বাস্তব প্রোডাক্টে রূপ দিতে ভালোবাসি।"
+}

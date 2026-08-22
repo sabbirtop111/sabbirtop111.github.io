@@ -1,0 +1,186 @@
+---
+import { Icon } from 'astro-icon/components';
+import localData from '../data/home.json';
+---
+
+<section id="contact" class="section-container">
+  <div class="container mx-auto">
+    <div class="space-y-12">
+      <div class="contact-header opacity-0">
+        <h2 class="text-3xl md:text-4xl font-heading font-bold text-maintext mb-2 flex items-center gap-4">
+          <span class="text-accent">/</span> <span data-i18n="contact.title">Contact Me</span>
+        </h2>
+        <p class="text-subtext font-body text-sm max-w-md" data-i18n="contact.subtitle">
+          Feel free to reach out. I'm always open to discussing new projects and opportunities.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+        {localData.socials
+        .filter((social) => social.showInContact && social.url && social.url !== "#" && social.url !== "")
+        .map((social) => {
+          const isEmail = social.url.startsWith('mailto:');
+          return (
+            <a 
+              href={social.url} 
+              target={isEmail ? undefined : "_blank"}
+              rel={isEmail ? undefined : "noopener noreferrer"}
+              class="contact-card opacity-0 group p-8 bg-accent/5 border border-accent/10 rounded-2xl hover:border-accent/40 hover:bg-accent/10 hover:shadow-[0_0_20px_color-mix(in_srgb,var(--color-accent)_15%,transparent)] transition-all duration-300"
+            >
+              <Icon 
+                name={social.icon} 
+                class="w-12 h-12 text-accent mb-4 mx-auto group-hover:scale-110 transition-transform" 
+              />
+              <h3 class="text-maintext font-bold mb-1">{social.name}</h3>
+              <p class="text-subtext text-xs truncate px-2 mb-3">
+                {social.url.replace('https://', '').replace('mailto:', '').replace('wa.me/', '+')}
+              </p>
+              <span class="inline-flex items-center gap-1 text-[10px] uppercase tracking-widest text-accent/70 font-mono border border-accent/20 rounded-full px-2.5 py-0.5 group-hover:border-accent/40 group-hover:text-accent transition-colors duration-300">
+                {social.label || 'Connect'}
+              </span>
+            </a>
+          );
+        })}
+      </div>
+
+      <div class="contact-preferred opacity-0 rounded-2xl border border-accent/15 bg-accent/5 p-6 md:p-8 max-w-2xl mx-auto">
+        <h3 class="font-heading font-bold text-maintext text-lg mb-1" data-i18n="hire.title">Hire me</h3>
+        <p class="text-subtext text-sm font-body mb-5" data-i18n="hire.subtitle">
+          Tell me what you need — website, API, or Discord bot. I usually reply within a day.
+        </p>
+        <form id="hire-form" class="space-y-3 text-left">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <input id="hire-name" name="name" required maxlength="40" placeholder="Your name" class="px-4 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm placeholder:text-subtext/50 focus:outline-none focus:border-accent/50" />
+            <input id="hire-email" name="email" type="email" required maxlength="80" placeholder="Your email" class="px-4 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm placeholder:text-subtext/50 focus:outline-none focus:border-accent/50" />
+          </div>
+          <select id="hire-type" name="project_type" class="w-full px-4 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm focus:outline-none focus:border-accent/50">
+            <option value="Website">Website</option>
+            <option value="API">API</option>
+            <option value="Discord Bot">Discord Bot</option>
+            <option value="Other">Other</option>
+          </select>
+          <textarea id="hire-message" name="message" required maxlength="600" rows="4" placeholder="Project details" class="w-full px-4 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm placeholder:text-subtext/50 focus:outline-none focus:border-accent/50 resize-y"></textarea>
+          <button type="submit" class="w-full py-2.5 rounded-lg bg-accent/20 border border-accent/40 text-maintext text-sm font-semibold hover:bg-accent/30 transition-colors">
+            Send message
+          </button>
+          <p id="hire-status" class="text-xs text-subtext hidden"></p>
+        </form>
+      </div>
+
+      <p class="text-center text-subtext text-xs font-body pt-2">
+        Preferred: <span class="text-accent/80">Email</span> or <span class="text-accent/80">WhatsApp</span> — I typically respond within 24 hours.
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Header Initial State */
+  .contact-header {
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Cards Initial State */
+  .contact-card {
+    transform: translateY(20px) scale(0.95);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Preferred Text Initial State */
+  .contact-preferred {
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Shared Revealed State */
+  .contact-header.reveal,
+  .contact-card.reveal,
+  .contact-preferred.reveal {
+    opacity: 1 !important;
+    transform: translateY(0) scale(1);
+  }
+</style>
+
+<script>
+  const revealContact = () => {
+    const header = document.querySelector('.contact-header');
+    const cards = document.querySelectorAll('.contact-card');
+    const preferred = document.querySelector('.contact-preferred');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const target = entry.target as HTMLElement;
+
+          if (target.classList.contains('contact-card')) {
+            const index = Array.from(cards).indexOf(target);
+            setTimeout(() => {
+              target.classList.add('reveal');
+            }, (index % 4) * 150);
+          } else if (target.classList.contains('contact-preferred')) {
+            const delay = cards.length > 0 ? cards.length * 150 : 200;
+            setTimeout(() => {
+              target.classList.add('reveal');
+            }, delay);
+          } else {
+            target.classList.add('reveal');
+          }
+
+          observer.unobserve(target);
+        }
+      });
+    }, {
+      threshold: 0.15,
+      rootMargin: '0px 0px -10px 0px'
+    });
+
+    if (header) observer.observe(header);
+    cards.forEach(card => observer.observe(card));
+    if (preferred) observer.observe(preferred);
+  }
+
+  window.addEventListener('load', revealContact);
+  document.addEventListener('astro:after-swap', revealContact);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('hire-form');
+    const status = document.getElementById('hire-status');
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = (document.getElementById('hire-name') as HTMLInputElement | null)?.value.trim() || '';
+      const email = (document.getElementById('hire-email') as HTMLInputElement | null)?.value.trim() || '';
+      const type = (document.getElementById('hire-type') as HTMLSelectElement | null)?.value || '';
+      const message = (document.getElementById('hire-message') as HTMLTextAreaElement | null)?.value.trim() || '';
+      if (!name || !email || !message) return;
+
+      if (status) {
+        status.textContent = 'Sending...';
+        status.classList.remove('hidden');
+      }
+
+      try {
+        const res = await fetch('https://formsubmit.co/ajax/sabbirallvideo@gmail.com', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            name,
+            email,
+            project_type: type,
+            message,
+            _subject: `Hire request: ${type}`,
+            _template: 'table',
+            _captcha: 'false',
+          }),
+        });
+        if (!res.ok) throw new Error('send failed');
+        if (status) status.textContent = 'Sent! I will reply by email.';
+        if (form instanceof HTMLFormElement) form.reset();
+      } catch {
+        const mailto = `mailto:sabbirallvideo@gmail.com?subject=${encodeURIComponent('Hire request: ' + type)}&body=${encodeURIComponent(name + ' <' + email + '>\n\n' + message)}`;
+        window.location.href = mailto;
+        if (status) status.textContent = 'Opening your email app as a backup...';
+      }
+    });
+  });
+</script>

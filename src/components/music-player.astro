@@ -1,0 +1,221 @@
+---
+import { Icon } from 'astro-icon/components';
+import musicData from '../data/music.json';
+
+const tracks = musicData.tracks;
+const autoplay = musicData.autoplay !== false;
+---
+
+{tracks.length > 0 && (
+  <div id="music-player-wrapper" class="fixed top-4 left-4 z-50 reveal-content" style="animation-delay: 700ms;">
+    <audio id="bgm-audio" preload="auto" data-autoplay={autoplay ? "true" : "false"}></audio>
+
+    <!-- Toggle button -->
+    <button
+      id="music-toggle-btn"
+      aria-label="Toggle background music"
+      class="w-11 h-11 rounded-full flex items-center justify-center border border-accent/20 bg-background/60 backdrop-blur-md text-accent hover:border-accent/50 transition-all duration-300 shadow-lg relative"
+    >
+      <Icon name="mdi:volume-high" id="icon-vol-on" class="w-5 h-5" />
+      <Icon name="mdi:volume-off" id="icon-vol-off" class="w-5 h-5 hidden" />
+      <span id="music-eq" class="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-emerald-400 hidden items-center justify-center">
+        <span class="w-full h-full rounded-full bg-emerald-400 animate-ping"></span>
+      </span>
+    </button>
+
+    <!-- Popover panel -->
+    <div
+      id="music-panel"
+      class="absolute top-14 left-0 w-64 rounded-2xl border border-accent/15 bg-background/90 backdrop-blur-xl shadow-2xl p-4 opacity-0 scale-95 pointer-events-none transition-all duration-200 origin-top-left"
+    >
+      <p class="text-[10px] uppercase tracking-widest text-subtext font-body mb-2">Now Playing</p>
+      <p id="track-title" class="text-sm font-heading font-semibold text-maintext mb-3 truncate">
+        {tracks[0].title}
+      </p>
+
+      <!-- Play / Prev / Next -->
+      <div class="flex items-center justify-center gap-4 mb-3">
+        <button id="prev-track-btn" aria-label="Previous track" class="text-subtext hover:text-accent transition-colors">
+          <Icon name="mdi:skip-previous" class="w-6 h-6" />
+        </button>
+        <button id="play-pause-btn" aria-label="Play or pause" class="w-9 h-9 rounded-full bg-accent/15 border border-accent/30 flex items-center justify-center text-accent hover:bg-accent/25 transition-colors">
+          <Icon name="mdi:play" id="icon-play" class="w-5 h-5" />
+          <Icon name="mdi:pause" id="icon-pause" class="w-5 h-5 hidden" />
+        </button>
+        <button id="next-track-btn" aria-label="Next track" class="text-subtext hover:text-accent transition-colors">
+          <Icon name="mdi:skip-next" class="w-6 h-6" />
+        </button>
+      </div>
+
+      <!-- Volume -->
+      <div class="flex items-center gap-2 mb-3">
+        <Icon name="mdi:volume-medium" class="w-4 h-4 text-subtext shrink-0" />
+        <input
+          id="volume-slider"
+          type="range"
+          min="0"
+          max="100"
+          value="50"
+          class="w-full accent-[var(--color-accent)] cursor-pointer"
+        />
+      </div>
+
+      <!-- Track list -->
+      {tracks.length > 1 && (
+        <div class="border-t border-white/5 pt-2 mt-1 max-h-32 overflow-y-auto space-y-1">
+          {tracks.map((track, i) => (
+            <button
+              class="track-item w-full text-left text-xs font-body text-subtext hover:text-accent px-2 py-1.5 rounded-lg hover:bg-accent/5 transition-colors truncate"
+              data-index={i}
+            >
+              {track.title}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+)}
+
+<script define:vars={{ tracks }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!tracks || tracks.length === 0) return;
+
+    const audio = document.getElementById('bgm-audio');
+    const toggleBtn = document.getElementById('music-toggle-btn');
+    const panel = document.getElementById('music-panel');
+    const playPauseBtn = document.getElementById('play-pause-btn');
+    const iconPlay = document.getElementById('icon-play');
+    const iconPause = document.getElementById('icon-pause');
+    const iconVolOn = document.getElementById('icon-vol-on');
+    const iconVolOff = document.getElementById('icon-vol-off');
+    const musicEq = document.getElementById('music-eq');
+    const prevBtn = document.getElementById('prev-track-btn');
+    const nextBtn = document.getElementById('next-track-btn');
+    const volumeSlider = document.getElementById('volume-slider');
+    const trackTitle = document.getElementById('track-title');
+    const trackItems = document.querySelectorAll('.track-item');
+
+    if (!audio) return;
+
+    let currentIndex = 0;
+    const shouldAutoplay = audio.dataset.autoplay === 'true';
+
+    const savedVolume = localStorage.getItem('bgm-volume');
+    let volume = savedVolume !== null ? parseInt(savedVolume, 10) : 50;
+    if (volumeSlider) volumeSlider.value = volume.toString();
+    audio.volume = volume / 100;
+
+    function updatePlayUI(playing) {
+      if (playing) {
+        iconPlay?.classList.add('hidden');
+        iconPause?.classList.remove('hidden');
+        musicEq?.classList.remove('hidden');
+        musicEq?.classList.add('flex');
+        iconVolOn?.classList.remove('hidden');
+        iconVolOff?.classList.add('hidden');
+      } else {
+        iconPlay?.classList.remove('hidden');
+        iconPause?.classList.add('hidden');
+        musicEq?.classList.add('hidden');
+        musicEq?.classList.remove('flex');
+      }
+    }
+
+    function loadTrack(index, autoplay) {
+      currentIndex = (index + tracks.length) % tracks.length;
+      audio.src = tracks[currentIndex].file;
+      if (trackTitle) trackTitle.textContent = tracks[currentIndex].title;
+
+      trackItems.forEach((item) => {
+        item.classList.toggle('text-accent', parseInt(item.dataset.index || '0', 10) === currentIndex);
+      });
+
+      if (autoplay) {
+        attemptPlay();
+      }
+    }
+
+    function attemptPlay() {
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => updatePlayUI(true))
+          .catch(() => {
+            updatePlayUI(false);
+            const startOnInteraction = () => {
+              audio.play().then(() => updatePlayUI(true)).catch(() => {});
+              document.removeEventListener('click', startOnInteraction);
+              document.removeEventListener('touchstart', startOnInteraction);
+              document.removeEventListener('scroll', startOnInteraction);
+            };
+            document.addEventListener('click', startOnInteraction, { once: true });
+            document.addEventListener('touchstart', startOnInteraction, { once: true });
+            document.addEventListener('scroll', startOnInteraction, { once: true });
+          });
+      }
+    }
+
+    audio.addEventListener('ended', () => {
+      loadTrack(currentIndex + 1, true);
+    });
+
+    audio.addEventListener('play', () => updatePlayUI(true));
+    audio.addEventListener('pause', () => updatePlayUI(false));
+
+    toggleBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = panel?.classList.contains('opacity-0') === false;
+      if (isOpen) {
+        panel?.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+      } else {
+        panel?.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      const wrapper = document.getElementById('music-player-wrapper');
+      if (wrapper && !wrapper.contains(e.target)) {
+        panel?.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+      }
+    });
+
+    playPauseBtn?.addEventListener('click', () => {
+      if (audio.paused) {
+        attemptPlay();
+      } else {
+        audio.pause();
+      }
+    });
+
+    nextBtn?.addEventListener('click', () => loadTrack(currentIndex + 1, true));
+    prevBtn?.addEventListener('click', () => loadTrack(currentIndex - 1, true));
+
+    trackItems.forEach((item) => {
+      item.addEventListener('click', () => {
+        const idx = parseInt(item.dataset.index || '0', 10);
+        loadTrack(idx, true);
+      });
+    });
+
+    volumeSlider?.addEventListener('input', (e) => {
+      const target = e.target;
+      volume = parseInt(target.value, 10);
+      localStorage.setItem('bgm-volume', volume.toString());
+      audio.volume = volume / 100;
+
+      if (volume === 0) {
+        iconVolOn?.classList.add('hidden');
+        iconVolOff?.classList.remove('hidden');
+      } else if (!audio.paused) {
+        iconVolOn?.classList.remove('hidden');
+        iconVolOff?.classList.add('hidden');
+      }
+    });
+
+    audio.src = tracks[0].file;
+    if (shouldAutoplay) {
+      attemptPlay();
+    }
+  });
+</script>

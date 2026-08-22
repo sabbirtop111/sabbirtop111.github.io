@@ -1,0 +1,304 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+
+<div class="mt-8 rounded-2xl border border-accent/15 bg-accent/5 p-6 md:p-8">
+  <div class="flex items-center gap-2 mb-1 flex-wrap">
+    <span class="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full border text-pink-400 bg-pink-400/10 border-pink-400/20">
+      20 likes / UID / day
+    </span>
+    <span class="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full border text-accent bg-accent/10 border-accent/20">
+      Free Tool
+    </span>
+  </div>
+  <h3 class="text-xl font-heading font-bold text-maintext mb-1">❤️ Free Fire Like Sender</h3>
+  <p class="text-subtext text-sm font-body mb-5">
+    Type your own UID and tap Send Like. Each UID can get likes once per day (about 20). Status 2 means that UID already got today’s likes — try a different UID.
+  </p>
+
+  <div class="flex flex-col sm:flex-row gap-3">
+    <input
+      id="ff-like-uid"
+      type="text"
+      inputmode="numeric"
+      placeholder="Enter your Free Fire UID"
+      value=""
+      autocomplete="off"
+      class="flex-1 px-4 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm font-body placeholder:text-subtext/50 focus:outline-none focus:border-accent/50"
+    />
+    <select
+      id="ff-like-server"
+      class="px-3 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm font-body focus:outline-none focus:border-accent/50"
+    >
+      <option value="BD">BD</option>
+      <option value="IND">IND</option>
+      <option value="SG">SG</option>
+      <option value="TH">TH</option>
+      <option value="VN">VN</option>
+      <option value="PK">PK</option>
+      <option value="ME">ME</option>
+      <option value="BR">BR</option>
+      <option value="US">US</option>
+    </select>
+    <button
+      id="ff-like-btn"
+      type="button"
+      class="px-6 py-2.5 rounded-lg bg-accent/20 border border-accent/40 text-maintext text-sm font-body font-semibold hover:bg-accent/30 transition-colors whitespace-nowrap"
+    >
+      Send Like
+    </button>
+  </div>
+
+  <p id="ff-like-error" class="text-red-400 text-xs font-body mt-3 hidden"></p>
+  <p id="ff-like-note" class="text-amber-300 text-xs font-body mt-3 hidden"></p>
+
+  <div id="ff-like-loading" class="hidden mt-6 items-center gap-2 text-subtext text-sm font-body">
+    <Icon name="mdi:loading" class="w-4 h-4 animate-spin" />
+    Sending like...
+  </div>
+
+  <div id="ff-like-result" class="hidden mt-6">
+    <div class="flex items-center gap-3 pb-4 border-b border-white/10">
+      <div class="w-11 h-11 rounded-full bg-pink-400/20 flex items-center justify-center shrink-0">
+        <Icon name="mdi:heart" class="w-5 h-5 text-pink-400" />
+      </div>
+      <div class="min-w-0 flex-1">
+        <p id="ff-like-name" class="text-maintext font-heading font-bold text-base truncate"></p>
+        <p id="ff-like-uid-display" class="text-subtext text-[11px] font-body"></p>
+      </div>
+      <div class="flex flex-wrap gap-2 justify-end">
+        <button id="ff-like-copy" type="button" class="text-[11px] px-3 py-1.5 rounded-full border border-white/10 text-subtext hover:text-maintext hover:border-accent/40 transition-colors">Copy</button>
+        <button id="ff-like-download" type="button" class="text-[11px] px-3 py-1.5 rounded-full border border-accent/40 text-maintext bg-accent/15 hover:bg-accent/25 transition-colors">Download card</button>
+        <button id="ff-like-share" type="button" class="text-[11px] px-3 py-1.5 rounded-full border border-white/10 text-subtext hover:text-maintext hover:border-accent/40 transition-colors">Share</button>
+      </div>
+    </div>
+
+    <div id="ff-like-card" class="mt-4 rounded-2xl border border-pink-400/30 bg-background/70 p-4 md:p-5">
+      <p class="text-[10px] uppercase tracking-[0.2em] text-pink-400 mb-2">Gamer Sabbir • Like Card</p>
+      <p id="ff-like-card-name" class="font-heading font-bold text-xl text-maintext"></p>
+      <p id="ff-like-card-uid" class="text-xs text-subtext mb-3"></p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+        <div><p class="text-[10px] text-subtext uppercase">Given now</p><p id="ff-like-given" class="font-semibold"></p></div>
+        <div><p class="text-[10px] text-subtext uppercase">Before</p><p id="ff-like-before" class="font-semibold"></p></div>
+        <div><p class="text-[10px] text-subtext uppercase">After</p><p id="ff-like-after" class="font-semibold"></p></div>
+        <div><p class="text-[10px] text-subtext uppercase">Status</p><p id="ff-like-status" class="font-semibold"></p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const uidInput = document.getElementById('ff-like-uid');
+    const serverSelect = document.getElementById('ff-like-server');
+    const btn = document.getElementById('ff-like-btn');
+    const errorEl = document.getElementById('ff-like-error');
+    const noteEl = document.getElementById('ff-like-note');
+    const loadingEl = document.getElementById('ff-like-loading');
+    const resultEl = document.getElementById('ff-like-result');
+    let lastText = '';
+    let lastCard = null;
+    let sending = false;
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = String(value);
+    }
+
+    function showError(msg) {
+      if (!errorEl) return;
+      errorEl.textContent = msg;
+      errorEl.classList.remove('hidden');
+    }
+
+    function showNote(msg) {
+      if (!noteEl) return;
+      noteEl.textContent = msg;
+      noteEl.classList.remove('hidden');
+    }
+
+    async function readPlayer(uid, region) {
+      const res = await fetch(`https://sabbir-paid-info-api.vercel.app/player-info?uid=${encodeURIComponent(uid)}&region=${encodeURIComponent(region)}`);
+      if (!res.ok) throw new Error('info failed');
+      const data = await res.json();
+      const basic = data.basicInfo || {};
+      return {
+        name: basic.nickname || 'Unknown',
+        likes: Number(basic.liked ?? 0),
+        region: basic.region || region.toUpperCase(),
+      };
+    }
+
+    async function callLikeApi(uid, server) {
+      const url = `https://sabbir-paid-api2.vercel.app/like?uid=${encodeURIComponent(uid)}&server_name=${encodeURIComponent(server)}`;
+      try {
+        const res = await fetch(url, { cache: 'no-store' });
+        const data = await res.json().catch(() => null);
+        if (data && (data.status != null || data.UID != null || data.error)) return data;
+      } catch {
+        // CORS blocks reading the body — still fire the request so likes can apply
+        await fetch(url, { mode: 'no-cors', cache: 'no-store' }).catch(() => {});
+      }
+      return null;
+    }
+
+    function renderCard({ name, uid, server, given, before, after, status }) {
+      const usedToday = Number(status) === 2 || Number(given) === 0;
+      const label = usedToday ? 'Status 2 · already used today' : 'Status 1 · likes sent';
+
+      setText('ff-like-name', name);
+      setText('ff-like-uid-display', `UID: ${uid}`);
+      setText('ff-like-card-name', name);
+      setText('ff-like-card-uid', `UID ${uid} • ${server}`);
+      setText('ff-like-given', given);
+      setText('ff-like-before', before);
+      setText('ff-like-after', after);
+      setText('ff-like-status', label);
+      resultEl?.classList.remove('hidden');
+
+      lastCard = { name, uid, server, given, before, after, label };
+      lastText = `${name} (${uid})\nGiven ${given} • Before ${before} • After ${after}\n${label}`;
+
+      if (usedToday) {
+        showNote('Status 2: this UID already got today’s likes. Another UID can still receive likes today.');
+      } else {
+        showNote(`Sent ${given || 20} likes to this UID. Same UID cannot get more until tomorrow.`);
+      }
+    }
+
+    async function sendLike() {
+      if (sending) return;
+      const uid = uidInput instanceof HTMLInputElement ? uidInput.value.trim() : '';
+      const server = serverSelect instanceof HTMLSelectElement ? serverSelect.value : 'BD';
+      const region = server.toLowerCase();
+
+      errorEl?.classList.add('hidden');
+      noteEl?.classList.add('hidden');
+      resultEl?.classList.add('hidden');
+
+      if (!uid || !/^\d{5,20}$/.test(uid)) {
+        showError('Enter your own Free Fire UID first.');
+        return;
+      }
+
+      sending = true;
+      if (btn instanceof HTMLButtonElement) btn.disabled = true;
+      loadingEl?.classList.remove('hidden');
+      loadingEl?.classList.add('flex');
+
+      try {
+        let beforeInfo = null;
+        try {
+          beforeInfo = await readPlayer(uid, region);
+        } catch {
+          beforeInfo = null;
+        }
+
+        const api = await callLikeApi(uid, server);
+
+        if (api && api.error && !api.status) {
+          throw new Error(api.error);
+        }
+
+        if (api && (api.status === 1 || api.status === 2 || api.LikesGivenByAPI != null)) {
+          renderCard({
+            name: api.PlayerNickname || beforeInfo?.name || 'Unknown',
+            uid: api.UID || uid,
+            server,
+            given: api.LikesGivenByAPI ?? 0,
+            before: api.LikesbeforeCommand ?? beforeInfo?.likes ?? '—',
+            after: api.LikesafterCommand ?? '—',
+            status: api.status,
+          });
+          return;
+        }
+
+        // CORS fallback: confirm from Info API
+        await new Promise((r) => setTimeout(r, 1600));
+        let afterInfo = beforeInfo;
+        try {
+          afterInfo = await readPlayer(uid, region);
+        } catch {}
+
+        const before = beforeInfo?.likes ?? '—';
+        const after = afterInfo?.likes ?? before;
+        const given = typeof before === 'number' && typeof after === 'number' ? Math.max(after - before, 0) : 0;
+
+        renderCard({
+          name: afterInfo?.name || beforeInfo?.name || 'Unknown',
+          uid,
+          server,
+          given,
+          before,
+          after,
+          status: given > 0 ? 1 : 2,
+        });
+      } catch {
+        showError('Could not send like. Check the UID and server, then try again.');
+      } finally {
+        sending = false;
+        if (btn instanceof HTMLButtonElement) btn.disabled = false;
+        loadingEl?.classList.add('hidden');
+        loadingEl?.classList.remove('flex');
+      }
+    }
+
+    function buildCardCanvas() {
+      if (!lastCard) return null;
+      const canvas = document.createElement('canvas');
+      canvas.width = 900;
+      canvas.height = 520;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+      ctx.fillStyle = '#14010f';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = '#FF4D8D';
+      ctx.lineWidth = 8;
+      ctx.strokeRect(24, 24, canvas.width - 48, canvas.height - 48);
+      ctx.fillStyle = '#FF4D8D';
+      ctx.font = '700 22px sans-serif';
+      ctx.fillText('GAMER SABBIR  •  LIKE CARD', 60, 90);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '700 48px sans-serif';
+      ctx.fillText(String(lastCard.name).slice(0, 22), 60, 160);
+      ctx.fillStyle = '#FF4D8D';
+      ctx.font = '500 22px sans-serif';
+      ctx.fillText(`UID ${lastCard.uid}   ${lastCard.server}`, 60, 200);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '600 26px sans-serif';
+      ctx.fillText(`Given   ${lastCard.given}`, 60, 290);
+      ctx.fillText(`Before  ${lastCard.before}`, 360, 290);
+      ctx.fillText(`After   ${lastCard.after}`, 60, 350);
+      ctx.fillText(String(lastCard.label), 60, 410);
+      ctx.fillStyle = '#FF4D8D';
+      ctx.font = '500 16px sans-serif';
+      ctx.fillText('20 likes per UID each day  •  sabbirtop111.github.io', 60, 460);
+      return canvas;
+    }
+
+    btn?.addEventListener('click', sendLike);
+    uidInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendLike();
+    });
+
+    document.getElementById('ff-like-copy')?.addEventListener('click', async () => {
+      if (!lastText) return;
+      await navigator.clipboard.writeText(lastText).catch(() => {});
+    });
+    document.getElementById('ff-like-download')?.addEventListener('click', () => {
+      const canvas = buildCardCanvas();
+      if (!canvas) return;
+      const link = document.createElement('a');
+      link.download = `ff-like-${lastCard?.uid || 'player'}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+    document.getElementById('ff-like-share')?.addEventListener('click', async () => {
+      if (!lastText) return;
+      try {
+        if (navigator.share) await navigator.share({ title: 'Free Fire Like Card', text: lastText });
+        else await navigator.clipboard.writeText(lastText);
+      } catch {}
+    });
+  });
+</script>

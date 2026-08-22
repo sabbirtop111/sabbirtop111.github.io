@@ -1,0 +1,658 @@
+---
+import '../styles/global.css'
+import { SITE_CONFIG } from '../config.ts';
+import i18nData from '../data/i18n.json';
+
+interface Props {
+  title: string;
+  description?: string;
+  keywords?: string;
+  siteUrl?: string;
+  ogImageUrl?: string;
+  twitterHandle?: string;
+  personName?: string;
+  jobTitle?: string;
+  lang?: string;
+  socials?: { name: string; url: string }[];
+}
+
+const {
+  title,
+  description = '',
+  keywords = '',
+  siteUrl = '',
+  ogImageUrl = '/placeholder.jpeg',
+  twitterHandle = '',
+  personName = '',
+  jobTitle = '',
+  lang = 'en',
+  socials = [],
+} = Astro.props;
+
+
+const baseTheme = SITE_CONFIG.baseTheme;
+const defaultTheme = `${baseTheme}-dark`;
+
+// Canonical & OG absolute URLs
+const resolvedSiteUrl = siteUrl || Astro.site?.toString() || '';
+const canonicalUrl = resolvedSiteUrl 
+    ? resolvedSiteUrl.replace(/\/$/, '') + '/' 
+    : Astro.url.href;
+const ogImage = ogImageUrl
+    ? new URL(ogImageUrl, resolvedSiteUrl || Astro.url.origin).href
+    : '';
+
+// JSON-LD Structured Data (WebSite + Person)
+const sameAsUrls = socials
+  .filter((s) => s.url && s.url !== '#' && s.url !== '')
+  .map((s) => s.url);
+
+const siteName = personName || title;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': `${canonicalUrl || resolvedSiteUrl}#website`,
+      'name': siteName,
+      'alternateName': [siteName, title],
+      'url': canonicalUrl || resolvedSiteUrl,
+    },
+    {
+      '@type': 'Person',
+      '@id': `${canonicalUrl || resolvedSiteUrl}#person`,
+      'name': siteName,
+      ...(jobTitle ? { jobTitle } : {}),
+      ...(canonicalUrl ? { url: canonicalUrl } : {}),
+      ...(ogImage ? { image: ogImage } : {}),
+      ...(description ? { description } : {}),
+      ...(sameAsUrls.length ? { sameAs: sameAsUrls } : {}),
+    }
+  ]
+};
+
+// 'en' -> 'en_US'
+const ogLocale = lang.includes('_') ? lang : `${lang}_${lang.toUpperCase()}`;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <title>{title}</title>
+
+    <!-- PRIMARY META -->
+    {description && <meta name="description" content={description} />}
+    {keywords && <meta name="keywords" content={keywords} />}
+    {personName && <meta name="author" content={personName} />}
+    <meta name="robots" content="index, follow" />
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+
+    <!-- OPEN GRAPH -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:site_name" content={personName || title} />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    {ogImage && <meta property="og:image:width" content="1200" />}
+    {ogImage && <meta property="og:image:height" content="630" />}
+    <meta property="og:image:alt" content={`${personName || title} portfolio preview`} />
+
+    <!-- TWITTER CARD -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    {description && <meta name="twitter:description" content={description} />}
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
+    {twitterHandle && <meta name="twitter:site" content={`@${twitterHandle.replace(/^@/, '')}`} />}
+    {twitterHandle && <meta name="twitter:creator" content={`@${twitterHandle.replace(/^@/, '')}`} />}
+
+    <!-- JSON-LD STRUCTURED DATA -->
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+    <!-- THEME TOGGLE SCRIPT -->
+    <meta name="theme-color" content="#000000" id="theme-color-meta" />
+    <script is:inline define:vars={{ baseTheme, defaultTheme }}>
+      const savedTheme = localStorage.getItem('theme');
+      let activeTheme = defaultTheme;
+      const allowedThemes = [
+        baseTheme + '-dark',
+        baseTheme + '-light',
+        'gamer-dark',
+        'gamer-light',
+      ];
+
+      if (savedTheme && allowedThemes.includes(savedTheme)) {
+        activeTheme = savedTheme;
+      }
+      
+      document.documentElement.setAttribute('data-theme', activeTheme);
+      localStorage.setItem('theme', activeTheme);
+
+      // Set mobile status bar mode
+      const isDark = activeTheme.endsWith('-dark');
+      const meta = document.getElementById('theme-color-meta');
+      if (meta) {
+        meta.setAttribute('content', isDark ? '#000000' : '#FFFFFF');
+      }
+    </script>
+
+  </head>
+  <body class="bg-container relative min-h-screen overflow-x-hidden antialiased">
+    <canvas
+      id="matrix-canvas"
+      class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none [contain:layout_paint] [transform:translateZ(0)]"
+      style="mask-image: linear-gradient(to bottom, black 0%, black 80%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 0%, black 80%, transparent 100%);"
+    ></canvas>
+
+    <canvas
+      id="cursor-trail-canvas"
+      class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none hidden md:block"
+    ></canvas>
+
+    <div class="fixed top-0 left-0 w-full h-[3px] z-[60] bg-white/5">
+      <div id="scroll-progress-bar" class="h-full bg-accent shadow-[0_0_10px_var(--color-accent)]" style="width: 0%;"></div>
+    </div>
+
+    <div id="intro-loader" class="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center gap-4">
+      <p id="intro-loader-text" data-name={personName} class="font-heading font-bold text-maintext text-2xl md:text-4xl tracking-tight"></p>
+      <div class="w-40 h-[2px] bg-white/10 overflow-hidden rounded-full">
+        <div id="intro-loader-bar" class="h-full bg-accent" style="width: 0%;"></div>
+      </div>
+    </div>
+
+    <div class="fixed bottom-8 left-8 z-40 hidden sm:flex items-center gap-2 px-3 py-2 rounded-full bg-background/70 backdrop-blur-md border border-white/10 shadow-lg reveal-content" style="animation-delay: 900ms;">
+      <span class="relative flex w-2 h-2">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full w-2 h-2 bg-emerald-400"></span>
+      </span>
+      <span class="text-[11px] font-body text-subtext whitespace-nowrap">Usually replies within 1hr</span>
+    </div>
+
+    <nav id="section-dot-nav" class="section-dot-nav">
+      <a href="#home" class="section-dot" data-section="home"><span class="dot-label">Home</span></a>
+      <a href="#tools" class="section-dot" data-section="tools"><span class="dot-label">Tools</span></a>
+      <a href="#career" class="section-dot" data-section="career"><span class="dot-label">Career</span></a>
+      <a href="#projects" class="section-dot" data-section="projects"><span class="dot-label">Projects</span></a>
+      <a href="#skills" class="section-dot" data-section="skills"><span class="dot-label">Skills</span></a>
+      <a href="#lounge" class="section-dot" data-section="lounge"><span class="dot-label">Hub</span></a>
+      <a href="#contact" class="section-dot" data-section="contact"><span class="dot-label">Contact</span></a>
+    </nav>
+
+    <main class="px-2 sm:px-12 md:px-14 lg:px-28 max-w-360 mx-auto relative z-0">
+        <slot />
+    </main>
+
+    <button
+      id="to-top"
+      class="fixed bottom-8 right-8 z-50 p-0 rounded-full bg-background border border-accent/10 shadow-2xl transition-all duration-500 translate-y-20 opacity-0 group flex items-center justify-center cursor-pointer"
+      aria-label="Back to top"
+    >
+      <svg class="w-14 h-14 -rotate-90">
+        <circle cx="28" cy="28" r="24" fill="none" stroke="currentColor" stroke-width="3" class="text-accent/5"></circle>
+        <circle
+          id="progress-circle"
+          cx="28" cy="28" r="24"
+          fill="none"
+          stroke="currentColor" 
+          stroke-width="3"
+          stroke-dasharray="150.7"
+          stroke-dashoffset="150.7"
+          stroke-linecap="round"
+          class="text-accent transition-all duration-100"
+        ></circle>
+      </svg>
+      
+      <div class="absolute text-accent group-hover:scale-110 transition-transform">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+          <path d="M13.0001 7.82843V20H11.0001V7.82843L5.63614 13.1924L4.22192 11.7782L12.0001 4L19.7783 11.7782L18.3641 13.1924L13.0001 7.82843Z"></path>
+        </svg>
+      </div>
+    </button>
+
+    <script define:vars={{ i18nData }}>
+      document.addEventListener('DOMContentLoaded', () => {
+        const toggleBtn = document.getElementById('lang-toggle-btn');
+        const toggleLabel = document.getElementById('lang-toggle-label');
+        const heroDescription = document.getElementById('hero-description');
+        if (!toggleBtn) return;
+
+        function applyLanguage(lang) {
+          const dict = i18nData[lang] || i18nData.en;
+
+          document.querySelectorAll('[data-i18n]').forEach((el) => {
+            const key = el.getAttribute('data-i18n');
+            if (key && dict[key]) {
+              el.textContent = dict[key];
+            }
+          });
+
+          if (heroDescription) {
+            if (lang === 'bn') {
+              const bnHtml = heroDescription.getAttribute('data-bn-html');
+              if (bnHtml) heroDescription.innerHTML = bnHtml;
+            } else {
+              const enHtml = heroDescription.getAttribute('data-en-html');
+              if (enHtml) heroDescription.innerHTML = enHtml;
+            }
+          }
+
+          if (toggleLabel) toggleLabel.textContent = lang === 'bn' ? 'EN' : 'বাং';
+          document.documentElement.setAttribute('lang', lang === 'bn' ? 'bn' : 'en');
+          localStorage.setItem('site-lang', lang);
+        }
+
+        const savedLang = localStorage.getItem('site-lang') || 'en';
+        applyLanguage(savedLang);
+
+        toggleBtn.addEventListener('click', () => {
+          const current = localStorage.getItem('site-lang') || 'en';
+          applyLanguage(current === 'bn' ? 'en' : 'bn');
+        });
+      });
+    </script>
+
+    <script>
+      // ** HACKER TYPER / MATRIX RAIN BACKGROUND ** //
+      // Canvas-based for performance — a single draw call per frame instead of
+      // many animated DOM elements, so it stays smooth even while scrolling.
+      const isMobile = window.innerWidth <= 768;
+      const prefersReducedMotionBg = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      (function initMatrixRain() {
+        const canvas = document.getElementById('matrix-canvas');
+        if (!canvas || !(canvas instanceof HTMLCanvasElement)) return;
+        if (prefersReducedMotionBg) return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const chars = '01{}[]<>/\\=+*;:GAMERSABBIR'.split('');
+        const fontSize = isMobile ? 13 : 15;
+        let columns = 0;
+        let drops: number[] = [];
+
+        const accentColor = getComputedStyle(document.documentElement)
+          .getPropertyValue('--color-accent')
+          .trim() || '#A78BFA';
+
+        function resize() {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+          columns = Math.floor(canvas.width / fontSize);
+          drops = new Array(columns).fill(0).map(() => Math.floor(Math.random() * -50));
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        function draw() {
+          // Fade previous frame slightly instead of clearing — creates the trailing streak look
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.globalCompositeOperation = 'source-over';
+
+          ctx.font = `${fontSize}px monospace`;
+
+          for (let i = 0; i < drops.length; i++) {
+            const char = chars[Math.floor(Math.random() * chars.length)];
+            const x = i * fontSize;
+            const y = drops[i] * fontSize;
+
+            // Leading character brighter, rest slightly dimmer for depth
+            ctx.fillStyle = accentColor;
+            ctx.globalAlpha = 0.5;
+            ctx.fillText(char, x, y);
+            ctx.globalAlpha = 1;
+
+            if (y > canvas.height && Math.random() > 0.975) {
+              drops[i] = 0;
+            }
+            drops[i]++;
+          }
+        }
+
+        // Throttled interval instead of full-speed requestAnimationFrame —
+        // matrix rain looks correct at a lower, cheaper frame rate.
+        const intervalMs = isMobile ? 90 : 60;
+        setInterval(draw, intervalMs);
+      })();
+
+      // ** CURSOR TRAIL EFFECT ** //
+      // Desktop-only, respects reduced-motion, capped particle count for smooth performance
+      (function initCursorTrail() {
+        const canvas = document.getElementById('cursor-trail-canvas');
+        if (!canvas || !(canvas instanceof HTMLCanvasElement)) return;
+
+        const isFinePointer = window.matchMedia('(pointer: fine)').matches;
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!isFinePointer || isMobile || prefersReducedMotion) return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        function resize() {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        const accentColor = getComputedStyle(document.documentElement)
+          .getPropertyValue('--color-accent')
+          .trim() || '#A78BFA';
+
+        const MAX_PARTICLES = 40;
+        let particles = [];
+        let mouseX = -100;
+        let mouseY = -100;
+        let lastEmit = 0;
+
+        window.addEventListener('mousemove', (e) => {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+
+          const now = performance.now();
+          if (now - lastEmit > 20) {
+            lastEmit = now;
+            particles.push({
+              x: mouseX,
+              y: mouseY,
+              size: 2 + Math.random() * 2.5,
+              life: 1,
+            });
+            if (particles.length > MAX_PARTICLES) particles.shift();
+          }
+        });
+
+        function animate() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          particles.forEach((p) => {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+            ctx.fillStyle = accentColor;
+            ctx.globalAlpha = p.life * 0.5;
+            ctx.fill();
+            p.life -= 0.035;
+          });
+          ctx.globalAlpha = 1;
+
+          particles = particles.filter((p) => p.life > 0);
+          requestAnimationFrame(animate);
+        }
+        requestAnimationFrame(animate);
+      })();
+
+      
+      // ** SCROLL TO TOP ** //
+      const toTopBtn = document.getElementById('to-top');
+      const progressCircle = document.getElementById('progress-circle');
+      const circumference = 150.796; // 2 * pi * 24
+      const arrowIcon = toTopBtn?.querySelector('.absolute');
+
+      function handleScroll() {
+        const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollPercentage = window.scrollY / scrollHeight;
+
+        // Update the top scroll progress bar
+        const progressBar = document.getElementById('scroll-progress-bar');
+        if (progressBar) {
+          progressBar.style.width = `${Math.min(scrollPercentage * 100, 100)}%`;
+        }
+        
+        // Update the Circle Progress
+        const offset = circumference - (scrollPercentage * circumference);
+        if (progressCircle) {
+          progressCircle.style.strokeDashoffset = offset.toString();
+        }
+
+        // Visibility Logic (Appear at 50%)
+        if (scrollPercentage > 0.5) {
+          toTopBtn?.classList.remove('translate-y-20', 'opacity-0');
+          toTopBtn?.classList.add('translate-y-0', 'opacity-100');
+        } else {
+          toTopBtn?.classList.add('translate-y-20', 'opacity-0');
+          toTopBtn?.classList.remove('translate-y-0', 'opacity-100');
+        }
+
+        // Bounce Logic at 98%
+        if (scrollPercentage > 0.98) {
+          arrowIcon?.classList.add('animate-bounce-twice');
+        } else {
+          arrowIcon?.classList.remove('animate-bounce-twice');
+        }
+      }
+
+      window.addEventListener('scroll', handleScroll, { passive: true });
+
+      // ** INTRO / LOADING ANIMATION ** //
+      (function initIntroLoader() {
+        const loader = document.getElementById('intro-loader');
+        const loaderText = document.getElementById('intro-loader-text');
+        const loaderBar = document.getElementById('intro-loader-bar');
+        if (!loader || !loaderText) return;
+
+        // Skip on repeat visits within the same tab session, and respect reduced motion
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const alreadyShown = sessionStorage.getItem('intro-shown');
+
+        if (prefersReducedMotion || alreadyShown) {
+          loader.style.display = 'none';
+          return;
+        }
+
+        sessionStorage.setItem('intro-shown', '1');
+        document.body.style.overflow = 'hidden';
+
+        const name = loaderText.dataset.name || '';
+        let i = 0;
+
+        function typeChar() {
+          if (i <= name.length) {
+            loaderText.textContent = name.slice(0, i);
+            if (loaderBar) loaderBar.style.width = `${(i / name.length) * 100}%`;
+            i++;
+            setTimeout(typeChar, 45);
+          } else {
+            setTimeout(hideLoader, 400);
+          }
+        }
+
+        function hideLoader() {
+          loader.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+          loader.style.opacity = '0';
+          loader.style.transform = 'scale(1.03)';
+          document.body.style.overflow = '';
+          setTimeout(() => loader.remove(), 650);
+        }
+
+        typeChar();
+      })();
+
+      // ** TAB TITLE CHANGE ON LEAVE ** //
+      (function initTabTitleSwap() {
+        const originalTitle = document.title;
+        const awayTitle = '👋 Come back!';
+
+        document.addEventListener('visibilitychange', () => {
+          document.title = document.hidden ? awayTitle : originalTitle;
+        });
+      })();
+
+      // ** PWA SERVICE WORKER ** //
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+
+      // ** BROWSER CONSOLE EASTER EGG ** //
+      console.log(
+        '%c👋 Hey there, fellow dev!',
+        'color:#A78BFA; font-size:20px; font-weight:bold;'
+      );
+      console.log(
+        '%cLike what you see? This whole site is built with Astro + Tailwind.\nFeel free to poke around — and if you spot a bug, no judgement 😄',
+        'color:#b2bed1; font-size:13px;'
+      );
+      console.log(
+        '%c— Gamer Sabbir',
+        'color:#A78BFA; font-size:13px; font-style:italic;'
+      );
+
+      // ** CLICK RIPPLE EFFECT ** //
+      (function initClickRipple() {
+        const prefersReducedMotionRipple = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReducedMotionRipple) return;
+
+        document.addEventListener('click', (e) => {
+          const ripple = document.createElement('span');
+          ripple.className = 'click-ripple';
+          ripple.style.left = `${e.clientX}px`;
+          ripple.style.top = `${e.clientY}px`;
+          document.body.appendChild(ripple);
+          setTimeout(() => ripple.remove(), 650);
+        });
+      })();
+
+      // ** GAMIFIED ACHIEVEMENT TOAST ** //
+      (function initAchievementToast() {
+        if (sessionStorage.getItem('achievement-shown')) return;
+
+        function showToast() {
+          if (sessionStorage.getItem('achievement-shown')) return;
+          sessionStorage.setItem('achievement-shown', '1');
+
+          const toast = document.createElement('div');
+          toast.className = 'achievement-toast';
+          toast.innerHTML = '🏆 <strong>Achievement Unlocked</strong><br/><span style="opacity:0.8; font-size:12px;">Explored the full portfolio!</span>';
+          document.body.appendChild(toast);
+
+          requestAnimationFrame(() => toast.classList.add('show'));
+          setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 500);
+          }, 4000);
+        }
+
+        window.addEventListener('scroll', () => {
+          const scrolledToBottom =
+            window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 100;
+          if (scrolledToBottom) showToast();
+        }, { passive: true });
+      })();
+
+      // ** WELCOME WAVE ANIMATION ** //
+      (function initWelcomeWave() {
+        if (sessionStorage.getItem('welcome-wave-shown')) return;
+        sessionStorage.setItem('welcome-wave-shown', '1');
+
+        const wave = document.createElement('div');
+        wave.className = 'welcome-wave';
+        wave.textContent = '👋';
+        document.body.appendChild(wave);
+
+        setTimeout(() => wave.remove(), 2200);
+      })();
+
+      // ** SECTION DOT NAVIGATION ** //
+      (function initSectionDotNav() {
+        const dots = document.querySelectorAll('.section-dot');
+        if (!dots.length) return;
+
+        const sections = Array.from(dots)
+          .map((dot) => document.getElementById(dot.getAttribute('data-section') || ''))
+          .filter(Boolean);
+
+        const dotObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                dots.forEach((dot) => dot.classList.remove('active'));
+                const activeDot = document.querySelector(`.section-dot[data-section="${entry.target.id}"]`);
+                activeDot?.classList.add('active');
+              }
+            });
+          },
+          { rootMargin: '-45% 0px -45% 0px' }
+        );
+
+        sections.forEach((section) => section && dotObserver.observe(section));
+      })();
+
+      toTopBtn?.addEventListener('click', () => {
+      arrowIcon?.classList.add('launching');
+
+      const startPosition = window.scrollY;
+      const duration = 750;
+      let startTime: number | null = null;
+      let requestID: number;
+
+      const stopAnimation = () => {
+        cancelAnimationFrame(requestID);
+        arrowIcon?.classList.remove('launching');
+        window.removeEventListener('wheel', stopAnimation);
+        window.removeEventListener('touchmove', stopAnimation);
+      };
+
+      function easeOutQuad(t: number, b: number, c: number, d: number) {
+        t /= d;
+        return -c * t * (t - 2) + b;
+      }
+
+      function animation(currentTime: number) {
+        if (startTime === null) startTime = currentTime;
+        const timeElapsed = currentTime - startTime;
+        const run = easeOutQuad(timeElapsed, startPosition, -startPosition, duration);
+        
+        window.scrollTo(0, run);
+
+        if (timeElapsed < duration) {
+          requestID = requestAnimationFrame(animation);
+        } else {
+          stopAnimation();
+        }
+      }
+
+      // Listen for any user interruption
+      window.addEventListener('wheel', stopAnimation, { once: true });
+      window.addEventListener('touchmove', stopAnimation, { once: true });
+
+      requestID = requestAnimationFrame(animation);
+    });
+    </script>
+
+    <script>
+      (function initKonami() {
+        const seq = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+        let i = 0;
+        window.addEventListener('keydown', (e) => {
+          const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+          if (key === seq[i]) {
+            i += 1;
+            if (i === seq.length) {
+              i = 0;
+              sessionStorage.setItem('konami-unlocked', '1');
+              const toast = document.createElement('div');
+              toast.className = 'achievement-toast show';
+              toast.innerHTML = '🎮 <strong>Secret unlocked</strong><br/><span style="opacity:0.8;font-size:12px;">Opening hidden page…</span>';
+              document.body.appendChild(toast);
+              setTimeout(() => { window.location.href = '/secret'; }, 700);
+            }
+          } else {
+            i = key === seq[0] ? 1 : 0;
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,78 @@
+---
+import { Icon } from 'astro-icon/components';
+
+const DISCORD_INVITE = 'https://discord.gg/SfuFVPnNCu';
+const DISCORD_GUILD_ID = '1361300786063347842';
+---
+
+<section id="lounge" class="section-container overflow-hidden">
+  <div class="container mx-auto space-y-8">
+    <div>
+      <h2 class="text-3xl md:text-4xl font-heading font-bold text-maintext mb-2 flex items-center gap-4">
+        <span class="text-accent">/</span> <span data-i18n="hub.title">Community Hub</span>
+      </h2>
+      <p class="text-subtext font-body text-sm max-w-md" data-i18n="hub.subtitle">
+        Join the Discord server — chat, updates, and bot demos live there.
+      </p>
+    </div>
+
+    <div class="rounded-2xl border border-accent/15 bg-accent/5 p-5 md:p-6 max-w-3xl">
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <div>
+          <p class="text-[10px] uppercase tracking-widest text-subtext mb-1">Live server</p>
+          <h3 class="font-heading font-bold text-maintext text-lg">GAMER-CORP Discord</h3>
+        </div>
+        <span class="inline-flex items-center gap-1.5 text-xs text-emerald-400">
+          <span class="relative flex w-2 h-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full w-2 h-2 bg-emerald-400"></span>
+          </span>
+          Online
+        </span>
+      </div>
+
+      <div class="flex gap-6 mb-4">
+        <div>
+          <p id="discord-online" class="text-2xl font-heading font-bold text-accent">20+</p>
+          <p class="text-[11px] text-subtext uppercase tracking-wider">Online</p>
+        </div>
+        <div>
+          <p id="discord-members" class="text-2xl font-heading font-bold text-maintext">265+</p>
+          <p class="text-[11px] text-subtext uppercase tracking-wider">Members</p>
+        </div>
+      </div>
+
+      <div class="rounded-xl overflow-hidden border border-white/10 bg-background/40 mb-4">
+        <iframe
+          title="Discord server widget"
+          src={`https://discord.com/widget?id=${DISCORD_GUILD_ID}&theme=dark`}
+          class="w-full h-[320px]"
+          sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+        ></iframe>
+      </div>
+
+      <a
+        href={DISCORD_INVITE}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-[#5865F2]/20 border border-[#5865F2]/40 text-maintext hover:bg-[#5865F2]/30 transition-colors text-sm font-semibold"
+      >
+        <Icon name="mdi:discord" class="w-5 h-5" />
+        Join Server
+      </a>
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ DISCORD_GUILD_ID }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    fetch(`https://discord.com/api/guilds/${DISCORD_GUILD_ID}/widget.json`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!data) return;
+        const online = document.getElementById('discord-online');
+        if (online && data.presence_count != null) online.textContent = String(data.presence_count);
+      })
+      .catch(() => {});
+  });
+</script>
