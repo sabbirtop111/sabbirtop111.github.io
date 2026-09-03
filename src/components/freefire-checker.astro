@@ -1,0 +1,455 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+
+<div class="rounded-2xl border border-accent/15 bg-accent/5 p-6 md:p-8 ff-widget-reveal">
+  <div class="flex items-center gap-2 mb-1 flex-wrap">
+    <span class="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full border text-emerald-400 bg-emerald-400/10 border-emerald-400/20">
+      <span data-en="Live Demo" data-bn="লাইভ ডেমো">Live Demo</span>
+    </span>
+    <span class="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full border text-accent bg-accent/10 border-accent/20">
+      <span data-en="Free Tool" data-bn="ফ্রি টুল">Free Tool</span>
+    </span>
+  </div>
+  <h3 class="text-xl font-heading font-bold text-maintext mb-1" data-en="Free Fire Player Info Checker" data-bn="Free Fire প্লেয়ার ইনফো চেকার">🔥 Free Fire Player Info Checker</h3>
+  <p class="text-subtext text-sm font-body mb-5" data-en="Enter any Free Fire UID and region — nickname, ranks, likes, guild, pet, credit score and more." data-bn="যেকোনো Free Fire UID আর সার্ভার দাও। নাম, র‍্যাঙ্ক, লাইক, গিল্ড।">
+    Enter any Free Fire UID and region — nickname, ranks, likes, guild, pet, credit score and more.
+  </p>
+
+  <div class="flex flex-col sm:flex-row gap-3">
+    <input
+      id="ff-uid-input"
+      type="text"
+      inputmode="numeric"
+      placeholder="Enter Free Fire UID"
+      value="3153401580"
+      autocomplete="off"
+      class="flex-1 px-4 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm font-body placeholder:text-subtext/50 focus:outline-none focus:border-accent/50"
+    />
+    <label for="ff-region-select" class="sr-only">Region</label>
+    <select
+      id="ff-region-select"
+      aria-label="Region"
+      class="px-3 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm font-body focus:outline-none focus:border-accent/50"
+    >
+      <option value="bd">BD</option>
+      <option value="ind">IND</option>
+      <option value="sg">SG</option>
+      <option value="th">TH</option>
+      <option value="vn">VN</option>
+      <option value="pk">PK</option>
+      <option value="me">ME</option>
+      <option value="br">BR</option>
+      <option value="us">US</option>
+    </select>
+    <button
+      id="ff-check-btn"
+      type="button"
+      class="px-6 py-2.5 rounded-lg bg-accent/20 border border-accent/40 text-maintext text-sm font-body font-semibold hover:bg-accent/30 transition-colors whitespace-nowrap"
+    >
+      Check Info
+    </button>
+    <button
+      id="ff-link-btn"
+      type="button"
+      class="px-4 py-2.5 rounded-lg border border-white/10 text-subtext text-sm hover:text-maintext hover:border-accent/40"
+    >
+      Copy UID link
+    </button>
+  </div>
+
+  <p id="ff-error" class="text-red-400 text-xs font-body mt-3 hidden"></p>
+
+  <div id="ff-loading" class="hidden mt-6 items-center gap-2 text-subtext text-sm font-body">
+    <Icon name="mdi:loading" class="w-4 h-4 animate-spin" />
+    Fetching player info...
+  </div>
+
+  <div id="ff-result" class="hidden mt-6">
+    <div class="flex items-center gap-3 pb-4 border-b border-white/10">
+      <div class="w-11 h-11 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
+        <Icon name="mdi:account" class="w-5 h-5 text-accent" />
+      </div>
+      <div class="min-w-0 flex-1">
+        <p id="ff-nickname" class="text-maintext font-heading font-bold text-base truncate"></p>
+        <p id="ff-uid-display" class="text-subtext text-[11px] font-body"></p>
+      </div>
+      <div class="flex flex-wrap gap-2 justify-end">
+        <button
+          id="ff-copy-btn"
+          type="button"
+          class="text-[11px] px-3 py-1.5 rounded-full border border-white/10 text-subtext hover:text-maintext hover:border-accent/40 transition-colors"
+        >
+          Copy
+        </button>
+        <button
+          id="ff-download-btn"
+          type="button"
+          class="text-[11px] px-3 py-1.5 rounded-full border border-accent/40 text-maintext bg-accent/15 hover:bg-accent/25 transition-colors"
+        >
+          Download card
+        </button>
+        <button
+          id="ff-share-btn"
+          type="button"
+          class="text-[11px] px-3 py-1.5 rounded-full border border-white/10 text-subtext hover:text-maintext hover:border-accent/40 transition-colors"
+        >
+          Share
+        </button>
+      </div>
+    </div>
+
+    <div id="ff-share-card" class="mt-4 rounded-2xl border border-accent/30 bg-background/70 p-4 md:p-5">
+      <p class="text-[10px] uppercase tracking-[0.2em] text-accent mb-2">Gamer Sabbir • FF Card</p>
+      <p id="ff-card-name" class="font-heading font-bold text-xl text-maintext"></p>
+      <p id="ff-card-uid" class="text-xs text-subtext mb-3"></p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+        <div><p class="text-[10px] text-subtext uppercase">Level</p><p id="ff-card-level" class="font-semibold"></p></div>
+        <div><p class="text-[10px] text-subtext uppercase">Likes</p><p id="ff-card-likes" class="font-semibold"></p></div>
+        <div><p class="text-[10px] text-subtext uppercase">BR Points</p><p id="ff-card-br" class="font-semibold"></p></div>
+        <div><p class="text-[10px] text-subtext uppercase">Guild</p><p id="ff-card-guild" class="font-semibold truncate"></p></div>
+      </div>
+    </div>
+
+    <p id="ff-signature" class="text-subtext text-sm font-body italic mt-4 hidden"></p>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-4">
+      <div class="stat-box"><p class="stat-label">Level</p><p id="ff-level" class="stat-value"></p></div>
+      <div class="stat-box"><p class="stat-label">EXP</p><p id="ff-exp" class="stat-value"></p></div>
+      <div class="stat-box"><p class="stat-label">Region</p><p id="ff-region" class="stat-value"></p></div>
+      <div class="stat-box"><p class="stat-label">Season</p><p id="ff-season" class="stat-value"></p></div>
+      <div class="stat-box"><p class="stat-label">Likes</p><p id="ff-likes" class="stat-value"></p></div>
+      <div class="stat-box"><p class="stat-label">Credit Score</p><p id="ff-credit" class="stat-value"></p></div>
+      <div class="stat-box"><p class="stat-label">BR Rank</p><p id="ff-rank" class="stat-value"></p></div>
+      <div class="stat-box"><p class="stat-label">BR Points</p><p id="ff-rank-points" class="stat-value"></p></div>
+      <div class="stat-box"><p class="stat-label">BR Max Rank</p><p id="ff-max-rank" class="stat-value"></p></div>
+      <div class="stat-box"><p class="stat-label">CS Rank</p><p id="ff-cs-rank" class="stat-value"></p></div>
+      <div class="stat-box"><p class="stat-label">CS Points</p><p id="ff-cs-rank-points" class="stat-value"></p></div>
+      <div class="stat-box"><p class="stat-label">CS Max Rank</p><p id="ff-cs-max-rank" class="stat-value"></p></div>
+      <div class="stat-box"><p class="stat-label">Guild</p><p id="ff-guild" class="stat-value"></p></div>
+      <div class="stat-box"><p class="stat-label">Guild Level</p><p id="ff-guild-level" class="stat-value"></p></div>
+      <div class="stat-box"><p class="stat-label">Guild Members</p><p id="ff-guild-members" class="stat-value"></p></div>
+      <div class="stat-box"><p class="stat-label">Captain</p><p id="ff-captain" class="stat-value"></p></div>
+      <div class="stat-box"><p class="stat-label">Pet Level</p><p id="ff-pet" class="stat-value"></p></div>
+      <div class="stat-box"><p class="stat-label">Version</p><p id="ff-version" class="stat-value"></p></div>
+      <div class="stat-box"><p class="stat-label">Created</p><p id="ff-created" class="stat-value"></p></div>
+      <div class="stat-box"><p class="stat-label">Last Login</p><p id="ff-last-login" class="stat-value"></p></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .stat-box {
+    background: color-mix(in srgb, var(--color-background), transparent 20%);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .stat-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-subtext);
+    margin-bottom: 4px;
+  }
+  .stat-value {
+    font-family: inherit;
+    font-weight: 600;
+    color: var(--color-maintext);
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ff-widget-reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .ff-widget-reveal.reveal {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const revealEl = document.querySelector('.ff-widget-reveal');
+    if (revealEl) {
+      const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('reveal');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      revealObserver.observe(revealEl);
+    }
+
+    const uidInput = document.getElementById('ff-uid-input');
+    const regionSelect = document.getElementById('ff-region-select');
+    const checkBtn = document.getElementById('ff-check-btn');
+    const errorEl = document.getElementById('ff-error');
+    const loadingEl = document.getElementById('ff-loading');
+    const resultEl = document.getElementById('ff-result');
+    const copyBtn = document.getElementById('ff-copy-btn');
+    const downloadBtn = document.getElementById('ff-download-btn');
+    const shareBtn = document.getElementById('ff-share-btn');
+    let lastCardText = '';
+    let lastCard = null;
+
+    function formatUnix(value) {
+      if (!value) return '—';
+      const n = Number(value);
+      if (!Number.isFinite(n) || n <= 0) return '—';
+      const date = new Date(n * 1000);
+      if (Number.isNaN(date.getTime())) return '—';
+      return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function formatNumber(value) {
+      if (value === 0) return '0';
+      if (value === undefined || value === null || value === '') return '—';
+      const n = Number(value);
+      return Number.isFinite(n) ? n.toLocaleString() : String(value);
+    }
+
+    function cleanSignature(raw) {
+      if (!raw) return '';
+      return String(raw)
+        .replace(/\[[^\]]+\]/g, ' ')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    async function checkPlayer() {
+      const uid = uidInput instanceof HTMLInputElement ? uidInput.value.trim() : '';
+      const region = regionSelect instanceof HTMLSelectElement ? regionSelect.value : 'bd';
+
+      errorEl?.classList.add('hidden');
+      resultEl?.classList.add('hidden');
+
+      if (!uid) {
+        if (errorEl) {
+          errorEl.textContent = 'Please enter a UID.';
+          errorEl.classList.remove('hidden');
+        }
+        return;
+      }
+
+      loadingEl?.classList.remove('hidden');
+      loadingEl?.classList.add('flex');
+
+      try {
+        const res = await fetch(`https://sabbir-paid-info-api.vercel.app/player-info?uid=${encodeURIComponent(uid)}&region=${encodeURIComponent(region)}`);
+        if (!res.ok) throw new Error('API request failed');
+        const data = await res.json();
+
+        const basic = data.basicInfo || {};
+        const clan = data.clanBasicInfo || {};
+        const captain = data.captainBasicInfo || {};
+        const pet = data.petInfo || {};
+        const social = data.socialInfo || {};
+        const credit = data.creditScoreInfo || {};
+
+        setText('ff-nickname', basic.nickname || 'Unknown');
+        setText('ff-uid-display', `UID: ${basic.accountId || uid}`);
+        setText('ff-level', formatNumber(basic.level));
+        setText('ff-exp', formatNumber(basic.exp));
+        setText('ff-region', basic.region ?? region.toUpperCase());
+        setText('ff-season', basic.seasonId ?? '—');
+        setText('ff-likes', formatNumber(basic.liked));
+        setText('ff-credit', credit.creditScore ?? '—');
+        setText('ff-rank', formatNumber(basic.rank));
+        setText('ff-rank-points', formatNumber(basic.rankingPoints));
+        setText('ff-max-rank', formatNumber(basic.maxRank));
+        setText('ff-cs-rank', formatNumber(basic.csRank));
+        setText('ff-cs-rank-points', formatNumber(basic.csRankingPoints));
+        setText('ff-cs-max-rank', formatNumber(basic.csMaxRank));
+        setText('ff-guild', clan.clanName || 'No Guild');
+        setText('ff-guild-level', clan.clanLevel ?? '—');
+        setText('ff-guild-members', clan.memberNum && clan.capacity ? `${clan.memberNum}/${clan.capacity}` : (clan.memberNum ?? '—'));
+        setText('ff-captain', captain.nickname || '—');
+        setText('ff-pet', pet.level ?? '—');
+        setText('ff-version', basic.releaseVersion || '—');
+        setText('ff-created', formatUnix(basic.createAt));
+        setText('ff-last-login', formatUnix(basic.lastLoginAt));
+
+        const signatureEl = document.getElementById('ff-signature');
+        const signature = cleanSignature(social.signature);
+        if (signatureEl) {
+          if (signature) {
+            signatureEl.textContent = `"${signature}"`;
+            signatureEl.classList.remove('hidden');
+          } else {
+            signatureEl.textContent = '';
+            signatureEl.classList.add('hidden');
+          }
+        }
+
+        const card = {
+          name: basic.nickname || 'Unknown',
+          uid: String(basic.accountId || uid),
+          level: formatNumber(basic.level),
+          likes: formatNumber(basic.liked),
+          br: formatNumber(basic.rankingPoints),
+          cs: formatNumber(basic.csRankingPoints),
+          guild: clan.clanName || 'No Guild',
+          region: basic.region ?? region.toUpperCase(),
+        };
+
+        setText('ff-card-name', card.name);
+        setText('ff-card-uid', `UID ${card.uid} • ${card.region}`);
+        setText('ff-card-level', card.level);
+        setText('ff-card-likes', card.likes);
+        setText('ff-card-br', card.br);
+        setText('ff-card-guild', card.guild);
+
+        lastCardText = [
+          `${card.name} (${card.uid})`,
+          `Level ${card.level} • ${card.region}`,
+          `BR ${card.br} pts • CS ${card.cs} pts`,
+          `Likes ${card.likes} • Guild ${card.guild}`,
+        ].join('\n');
+        lastCard = card;
+
+        resultEl?.classList.remove('hidden');
+      } catch (err) {
+        if (errorEl) {
+          errorEl.textContent = "Couldn't fetch player info. The UID might be invalid, or the API may be temporarily unavailable.";
+          errorEl.classList.remove('hidden');
+        }
+      } finally {
+        loadingEl?.classList.add('hidden');
+        loadingEl?.classList.remove('flex');
+      }
+    }
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = String(value);
+    }
+
+    checkBtn?.addEventListener('click', checkPlayer);
+    uidInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') checkPlayer();
+    });
+    copyBtn?.addEventListener('click', async () => {
+      if (!lastCardText) return;
+      try {
+        await navigator.clipboard.writeText(lastCardText);
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1400);
+      } catch {
+        copyBtn.textContent = 'Copy failed';
+        setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1400);
+      }
+    });
+
+    function buildCardCanvas() {
+      if (!lastCard) return null;
+      const canvas = document.createElement('canvas');
+      canvas.width = 900;
+      canvas.height = 520;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+
+      const bg = getComputedStyle(document.documentElement).getPropertyValue('--color-background').trim() || '#070012';
+      const accent = getComputedStyle(document.documentElement).getPropertyValue('--color-accent').trim() || '#FF2EEA';
+      const text = getComputedStyle(document.documentElement).getPropertyValue('--color-maintext').trim() || '#ffffff';
+
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = accent;
+      ctx.lineWidth = 8;
+      ctx.strokeRect(24, 24, canvas.width - 48, canvas.height - 48);
+
+      ctx.fillStyle = accent;
+      ctx.font = '700 22px sans-serif';
+      ctx.fillText('GAMER SABBIR  •  FREE FIRE CARD', 60, 90);
+
+      ctx.fillStyle = text;
+      ctx.font = '700 48px sans-serif';
+      ctx.fillText(String(lastCard.name).slice(0, 22), 60, 160);
+      ctx.font = '500 22px sans-serif';
+      ctx.fillStyle = accent;
+      ctx.fillText(`UID ${lastCard.uid}   ${lastCard.region}`, 60, 200);
+
+      ctx.fillStyle = text;
+      ctx.font = '600 26px sans-serif';
+      ctx.fillText(`Level  ${lastCard.level}`, 60, 290);
+      ctx.fillText(`Likes  ${lastCard.likes}`, 360, 290);
+      ctx.fillText(`BR     ${lastCard.br}`, 60, 350);
+      ctx.fillText(`Guild  ${String(lastCard.guild).slice(0, 18)}`, 360, 350);
+
+      ctx.font = '500 16px sans-serif';
+      ctx.fillStyle = accent;
+      ctx.fillText('sabbirtop111.github.io', 60, 450);
+      return canvas;
+    }
+
+    downloadBtn?.addEventListener('click', () => {
+      const canvas = buildCardCanvas();
+      if (!canvas) return;
+      const link = document.createElement('a');
+      link.download = `ff-card-${lastCard?.uid || 'player'}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+
+    shareBtn?.addEventListener('click', async () => {
+      if (!lastCardText) return;
+      const canvas = buildCardCanvas();
+      try {
+        if (canvas && navigator.share && navigator.canShare) {
+          const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+          if (blob) {
+            const file = new File([blob], 'ff-card.png', { type: 'image/png' });
+            if (navigator.canShare({ files: [file] })) {
+              await navigator.share({ title: 'Free Fire Card', text: lastCardText, files: [file] });
+              return;
+            }
+          }
+        }
+        if (navigator.share) {
+          await navigator.share({ title: 'Free Fire Card', text: lastCardText });
+          return;
+        }
+        await navigator.clipboard.writeText(lastCardText);
+        shareBtn.textContent = 'Copied!';
+        setTimeout(() => { shareBtn.textContent = 'Share'; }, 1400);
+      } catch {
+        // user cancelled share
+      }
+    });
+
+    const linkBtn = document.getElementById('ff-link-btn');
+    function uidShareUrl() {
+      const uid = uidInput instanceof HTMLInputElement ? uidInput.value.trim() : '';
+      const region = regionSelect instanceof HTMLSelectElement ? regionSelect.value : 'bd';
+      const url = new URL('/tools/ff-info', window.location.origin);
+      if (uid) url.searchParams.set('uid', uid);
+      url.searchParams.set('region', region);
+      return url.toString();
+    }
+    linkBtn?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(uidShareUrl());
+        linkBtn.textContent = 'Link copied';
+        setTimeout(() => { linkBtn.textContent = 'Copy UID link'; }, 1400);
+      } catch {}
+    });
+
+    const params = new URLSearchParams(window.location.search);
+    const qUid = params.get('uid');
+    const qRegion = params.get('region');
+    if (qUid && uidInput instanceof HTMLInputElement) uidInput.value = qUid;
+    if (qRegion && regionSelect instanceof HTMLSelectElement) {
+      regionSelect.value = qRegion.toLowerCase();
+    }
+    if (qUid) checkPlayer();
+  });
+</script>

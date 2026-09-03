@@ -1,0 +1,113 @@
+---
+import { Icon } from 'astro-icon/components';
+import localData from '../data/home.json';
+---
+
+<footer class="section-container !pt-0 !pb-8">
+  <div class="container mx-auto">
+    <div class="footer-wrapper opacity-0 pt-10 border-t border-white/5">
+      <div class="flex flex-col md:flex-row justify-center items-center gap-4">
+        <p class="text-subtext text-sm font-body">
+          {localData.name} © 2026 · <span id="last-updated-badge" data-i18n="footer.updated">Updated recently</span>
+        </p>
+        <div class="flex gap-4 text-[10px] text-subtext/40">
+          <a href="/built" class="hover:text-subtext/70" data-i18n="footer.built">How I built this</a>
+          <a href="/devtools" class="hover:text-subtext/70" data-i18n="footer.devtools">Dev tools</a>
+        </div>
+      </div>
+      <p id="visitor-count" class="text-center text-[11px] text-subtext/60 font-body mt-4"></p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer-wrapper {
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .footer-wrapper.reveal {
+    opacity: 1 !important;
+    transform: translateY(0);
+  }
+
+  /* Theme-based icon switching */
+  :global([data-theme$="-dark"]) .astro-icon-light {
+    display: none;
+  }
+  
+  :global([data-theme$="-light"]) .astro-icon-dark {
+    display: none;
+  }
+</style>
+
+<script>
+  const revealFooter = () => {
+    const footer = document.querySelector('.footer-wrapper');
+    if (!footer) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('reveal');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.15,
+      rootMargin: '0px 0px -10px 0px'
+    });
+
+    observer.observe(footer);
+  };
+
+  window.addEventListener('load', revealFooter);
+  document.addEventListener('astro:after-swap', revealFooter);
+
+  // ** VISITOR COUNTER ** //
+  // Uses a free public hit-counter API. If it's ever unreachable, we just hide this quietly.
+  (function loadVisitorCount() {
+    const el = document.getElementById('visitor-count');
+    if (!el) return;
+
+    fetch('https://api.countapi.xyz/hit/sabbirtop111.github.io/visits')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && typeof data.value === 'number') {
+          el.textContent = `👀 ${data.value.toLocaleString()} visits`;
+        }
+      })
+      .catch(() => {
+        // Counter service unavailable — fail silently, no broken UI
+      });
+  })();
+
+  // ** LAST UPDATED BADGE (from GitHub commits) ** //
+  (function loadLastUpdated() {
+    const el = document.getElementById('last-updated-badge');
+    if (!el) return;
+
+    fetch('https://api.github.com/repos/sabbirtop111/sabbirtop111.github.io/commits?per_page=1')
+      .then((res) => res.json())
+      .then((data) => {
+        const dateStr = data?.[0]?.commit?.author?.date;
+        if (!dateStr) return;
+
+        const commitDate = new Date(dateStr);
+        const now = new Date();
+        const diffMs = now.getTime() - commitDate.getTime();
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+        let label;
+        if (diffDays <= 0) label = 'Updated today';
+        else if (diffDays === 1) label = 'Updated yesterday';
+        else if (diffDays < 30) label = `Updated ${diffDays} days ago`;
+        else label = `Updated ${commitDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`;
+
+        el.textContent = label;
+      })
+      .catch(() => {
+        // GitHub API unreachable or rate-limited — keep the static fallback text
+      });
+  })();
+</script>

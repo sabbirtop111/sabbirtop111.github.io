@@ -1,0 +1,48 @@
+---
+import FreeFireChecker from './freefire-checker.astro';
+import FreeFireLike from './freefire-like.astro';
+import MiscTools from './misc-tools.astro';
+---
+
+<section id="tools" class="section-container overflow-hidden">
+  <div class="container mx-auto">
+    <div class="mb-10">
+      <h2 class="text-3xl md:text-4xl font-heading font-bold text-maintext mb-2 flex items-center gap-4">
+        <span class="text-accent">/</span> <span data-i18n="tools.title">Live Tools</span>
+      </h2>
+      <p class="text-subtext font-body text-sm max-w-xl" data-i18n="tools.subtitle">
+        Check any Free Fire UID, then send 1 like per UID per day.
+      </p>
+      <div class="flex flex-wrap gap-4 mt-4 text-xs text-subtext">
+        <span class="inline-flex items-center gap-1.5">Info API <i id="api-dot-info" class="w-2 h-2 rounded-full bg-white/30 inline-block"></i> <span id="api-label-info">…</span></span>
+        <span class="inline-flex items-center gap-1.5">Like API <i id="api-dot-like" class="w-2 h-2 rounded-full bg-white/30 inline-block"></i> <span id="api-label-like">…</span></span>
+      </div>
+    </div>
+    <FreeFireChecker />
+    <FreeFireLike />
+    <MiscTools />
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    async function ping(id, url) {
+      const dot = document.getElementById('api-dot-' + id);
+      const label = document.getElementById('api-label-' + id);
+      try {
+        const res = await fetch(url, { method: 'GET' });
+        const ok = res.status < 500;
+        if (dot) dot.style.background = ok ? '#34d399' : '#f87171';
+        if (label) label.textContent = ok ? 'up' : 'down';
+      } catch {
+        if (dot) dot.style.background = '#f87171';
+        if (label) label.textContent = 'down';
+      }
+    }
+    const later = window.requestIdleCallback || ((fn) => setTimeout(fn, 1500));
+    later(() => {
+      ping('info', 'https://sabbir-paid-info-api.vercel.app/');
+      ping('like', 'https://sabbir-paid-api2.vercel.app/health');
+    });
+  });
+</script>

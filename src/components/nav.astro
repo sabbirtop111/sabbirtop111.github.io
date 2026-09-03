@@ -1,0 +1,450 @@
+---
+import { Icon } from 'astro-icon/components';
+import ThemeToggle from './theme-toggle.astro';
+interface NavItem {
+  label: string;
+  href: string;
+  icon: string;
+  i18n?: string;
+}
+
+const navItems: NavItem[] = [
+  {
+    label: "Home",
+    href: "#home",
+    icon: `mdi:home`,
+    i18n: "nav.home",
+  },
+  {
+    label: "Tools",
+    href: "#tools",
+    icon: `mdi:wrench`,
+    i18n: "nav.tools",
+  },
+  {
+    label: "Career",
+    href: "#career",
+    icon: `mdi:work`,
+    i18n: "nav.career",
+  },
+  {
+    label: "Projects",
+    href: "#projects",
+    icon: `mdi:computer`,
+    i18n: "nav.projects",
+  },
+  {
+    label: "Skills",
+    href: "#skills",
+    icon: `mdi:chart-bar`,
+    i18n: "nav.skills",
+  },
+  {
+    label: "Hub",
+    href: "#lounge",
+    icon: `mdi:forum`,
+    i18n: "nav.hub",
+  },
+  {
+    label: "Contact",
+    href: "#contact",
+    icon: `mdi:message`,
+    i18n: "nav.contact",
+  }
+];
+---
+<div id="theme-toggle-wrapper" class="fixed top-3 right-3 z-[60] md:top-4 md:right-4 reveal-content flex items-center gap-1.5" style="animation-delay: 700ms;">
+  <button
+    id="install-app-btn"
+    type="button"
+    aria-label="Add to Home Screen"
+    class="flex items-center justify-center h-9 w-9 rounded-full border border-accent/20 bg-background/60 backdrop-blur-md text-accent text-xs font-bold hover:border-accent/50 transition-all duration-300 shadow-lg"
+  >
+    <Icon name="mdi:cellphone-arrow-down" class="w-4 h-4" />
+    <span class="sr-only" data-i18n="nav.install">Install</span>
+  </button>
+  <div class="relative">
+    <button
+      id="qr-share-btn"
+      type="button"
+      aria-label="Share via QR code"
+      class="h-9 w-9 rounded-full flex items-center justify-center border border-accent/20 bg-background/60 backdrop-blur-md text-accent hover:border-accent/50 transition-all duration-300 shadow-lg"
+    >
+      <Icon name="mdi:qrcode" class="w-4 h-4" />
+    </button>
+
+    <div
+      id="qr-share-panel"
+      class="absolute top-12 right-0 w-56 rounded-2xl border border-accent/15 bg-background/95 backdrop-blur-xl shadow-2xl p-4 opacity-0 scale-95 pointer-events-none transition-all duration-200 origin-top-right flex flex-col items-center gap-3"
+    >
+      <p class="text-[10px] uppercase tracking-widest text-subtext font-body">Scan to visit</p>
+      <img id="qr-share-image" data-ready="0" alt="QR code to this portfolio" class="w-40 h-40 rounded-lg bg-white p-1 object-contain" />
+      <p class="text-[10px] text-subtext font-body text-center break-all" id="qr-share-url"></p>
+      <div class="flex w-full gap-2">
+        <button id="qr-copy-btn" type="button" class="flex-1 text-[11px] py-1.5 rounded-lg border border-white/10 text-subtext hover:text-maintext hover:border-accent/40 transition-colors">Copy link</button>
+        <a id="qr-open-link" href="#" target="_blank" rel="noopener noreferrer" class="flex-1 text-center text-[11px] py-1.5 rounded-lg border border-white/10 text-subtext hover:text-maintext hover:border-accent/40 transition-colors">Open</a>
+      </div>
+    </div>
+  </div>
+
+  <button
+    id="lang-toggle-btn"
+    type="button"
+    aria-label="Switch language"
+    class="h-9 px-3 rounded-full flex items-center justify-center border border-accent/20 bg-background/60 backdrop-blur-md text-accent text-xs font-bold hover:border-accent/50 transition-all duration-300 shadow-lg"
+  >
+    <span id="lang-toggle-label">বাং</span>
+  </button>
+  <ThemeToggle />
+</div>
+
+<div class="flex justify-center w-full">
+  <nav
+    id="main-nav"
+    class="fixed left-1/2 -translate-x-1/2 z-20 border-[1.2px] border-transparent transition-all duration-500 ease-in-out bottom-3 w-[min(92%,34rem)] md:top-5 md:bottom-auto md:w-auto md:max-w-[calc(100%-12rem)]"
+  >
+    <div class="container mx-auto flex justify-center items-center p-3 reveal-content" style="animation-delay: 700ms;">
+      <ul
+        class="flex w-full justify-between md:space-x-6 md:justify-center md:gap-12 gap-1"
+      >
+        {
+          navItems.map((item) => (
+            <li class="flex-1 md:flex-none">
+              <a
+                href={item.href}
+                aria-label={item.label}
+                class="flex flex-col items-center gap-1 text-accent transition-colors text-xs md:text-base relative group"
+              >
+                <div class="absolute -left-6 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full transition-all duration-300 scale-0 opacity-0 nav-indicator hidden md:block" />
+                <span class="md:hidden flex items-center justify-center w-6 h-6">
+                  <Icon 
+                    name={item.icon} 
+                    class="nav-icon w-full h-full text-accent/50 group-hover:text-accent transition-colors duration-300" 
+                  />
+                </span>
+                <span class="hidden md:inline-block" data-i18n={item.i18n}>{item.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </nav>
+</div>
+
+<style>
+    /* Reveal whole section when website loads */
+  .reveal-content {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: revealIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+  @keyframes revealIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  nav {
+    background-color: transparent;
+    border-color: transparent;
+    backdrop-filter: blur(0px);
+    transition:
+      background-color 0.4s ease,
+      backdrop-filter 0.4s ease,
+      border-radius 0.4s ease,
+      border-color 0.4s ease,
+      width 0.4s ease;
+  }
+
+   nav.scrolling {
+    background-color: color-mix(in srgb, var(--color-background), transparent 75%);
+    border-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
+    
+    border-radius: 9999px;
+    backdrop-filter: blur(10px);
+  }
+
+  nav a.active .nav-indicator {
+    transform: translateY(-50%) scale(1);
+    opacity: 0;
+  }
+
+  /* Base state for the link text */
+  nav a {
+    transition: transform 0.3s ease, color 0.3s ease, font-weight 0.3s ease;
+  }
+
+  /* Active state */
+  nav a.active {
+    color: var(--color-maintext) !important;
+    font-weight: 700;
+    transform: scale(1.1);
+  }
+
+  /* Glow effect */
+  nav a.active span {
+    text-shadow: 0 0 10px color-mix(in srgb, var(--color-maintext) 30%, transparent);
+  }
+
+  /* Ensure the scale doesn't jitter the layout */
+  nav li {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Icon style for mobile view */
+  .nav-icon {
+    transition: transform 0.3s ease, color 0.3s ease, filter 0.3s ease;
+  }
+
+  nav a.active .nav-icon {
+    color: var(--color-maintext) !important;
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 8px var(--color-maintext));
+  }
+
+  @media (max-width: 767px) {
+    nav {
+      width: 100% !important;
+      bottom: 0;
+      border-radius: 1.5rem 1.5rem 0 0;
+      background-color: color-mix(in srgb, var(--color-background), transparent 10%);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid color-mix(in srgb, var(--color-maintext) 15%, transparent);
+    }
+
+    nav.scrolling {
+      border-radius: 1.5rem 1.5rem 0 0;
+      width: 100% !important;
+    }
+
+    /* Hiding bottom bar while scroling on mobile */
+    #main-nav {
+      /* Force Hardware Acceleration (Fixes the white flash) */
+      will-change: transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      /* Force it into its own GPU layer permanently */
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+      
+      /* Smooth transition */
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+
+      /* Ensure no default background is fighting the blur */
+      background-clip: padding-box;
+    }
+
+    #main-nav.nav-hidden {
+      /* transform: translateY(110%) !important; */
+      transform: translate3d(0, 110%, 0) !important;
+      
+      /* Optional: Turn off blur when hidden to save GPU cycles */
+      backdrop-filter: blur(0px);
+    }
+
+    /* Hiding theme-toggle while scroling on mobile */
+    #theme-toggle-wrapper {
+      will-change: transform;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    /* Slide the button UP out of view */
+    #theme-toggle-wrapper.theme-hidden {
+      transform: translateY(-150%) !important;
+    }
+  }
+
+  /* Hover effect */
+  nav a:not(.active):hover {
+    color: var(--color-maintext) !important;
+  }
+
+  nav a:not(.active):hover span {
+    transform: scale(0.95);
+    text-shadow: 0 0 15px var(--color-accent-60);
+  }
+  
+  nav a:not(.active):hover .nav-icon {
+    transform: scale(0.95);
+    color: var(--color-maintext) !important;
+  }
+
+  @media (max-width: 767px) {
+    body {
+      padding-bottom: 70px;
+    }
+  }
+</style>
+
+<script>
+  // ** QR CODE SHARE ** //
+  document.addEventListener('DOMContentLoaded', () => {
+    const qrBtn = document.getElementById('qr-share-btn');
+    const qrPanel = document.getElementById('qr-share-panel');
+    const qrImage = document.getElementById('qr-share-image');
+    const qrUrl = document.getElementById('qr-share-url');
+    const qrCopy = document.getElementById('qr-copy-btn');
+    const qrOpen = document.getElementById('qr-open-link');
+
+    function getShareUrl() {
+      const configured = 'https://sabbirtop111.github.io/';
+      if (window.location.hostname.includes('github.io')) {
+        return window.location.origin + '/';
+      }
+      if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+          return configured;
+        }
+        return window.location.origin + '/';
+      }
+      return configured;
+    }
+
+    function loadQr(url: string) {
+      if (!(qrImage instanceof HTMLImageElement)) return;
+      qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&ecc=M&data=${encodeURIComponent(url)}`;
+      qrImage.dataset.ready = '1';
+      qrImage.onerror = () => {
+        qrImage.src = `https://quickchart.io/qr?size=240&text=${encodeURIComponent(url)}`;
+      };
+    }
+
+    qrBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = qrPanel?.classList.contains('opacity-0') === false;
+
+      if (isOpen) {
+        qrPanel?.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+        return;
+      }
+
+      const siteUrl = getShareUrl();
+      if (qrImage instanceof HTMLImageElement && qrImage.dataset.ready !== '1') {
+        loadQr(siteUrl);
+      }
+      if (qrUrl) qrUrl.textContent = siteUrl;
+      if (qrOpen instanceof HTMLAnchorElement) qrOpen.href = siteUrl;
+
+      qrPanel?.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+    });
+
+    qrCopy?.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const siteUrl = getShareUrl();
+      try {
+        await navigator.clipboard.writeText(siteUrl);
+        qrCopy.textContent = 'Copied!';
+        setTimeout(() => { qrCopy.textContent = 'Copy link'; }, 1400);
+      } catch {
+        qrCopy.textContent = 'Failed';
+        setTimeout(() => { qrCopy.textContent = 'Copy link'; }, 1400);
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (qrPanel && qrBtn && !qrPanel.contains(e.target as Node) && !qrBtn.contains(e.target as Node)) {
+        qrPanel.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+      }
+    });
+  });
+
+  //scroll morphing effect, changing width & border radius
+  const nav = document.getElementById("main-nav");
+  const themeWrapper = document.getElementById("theme-toggle-wrapper");
+
+  const maxScroll = 1000;
+  let lastScrollY = window.scrollY;
+  let rafId: number | null = null;
+
+  function updateNav() {
+    const currentScrollY = window.scrollY;
+
+    if (currentScrollY > 0) {
+      nav?.classList.add("scrolling");
+
+      const scrollProgress = Math.min(window.scrollY / maxScroll, 1);
+      const easeProgress = 1 - Math.pow(1 - scrollProgress, 4);
+
+      const minWidth = 620;
+      const maxWidth = window.innerWidth * 0.8;
+      const currentWidth = maxWidth - (maxWidth - minWidth) * easeProgress;
+
+      if (window.innerWidth >= 768) {
+        nav?.style.setProperty("width", `${currentWidth}px`);
+      }
+    } else {
+      nav?.classList.remove("scrolling");
+      // nav?.style.setProperty("width", "80%");
+    }
+    if (window.innerWidth < 768) {
+      // Small buffer (e.g. 10px) to prevent accidental hiding on "jittery" scrolls
+      if (currentScrollY > lastScrollY && currentScrollY > 50) {
+        // Scrolling Down - Hide Nav & theme-toggle
+        nav?.classList.add("nav-hidden");
+        themeWrapper?.classList.add("theme-hidden");
+      } else {
+        // Scrolling Up - Show Nav & theme-toggle
+        nav?.classList.remove("nav-hidden");
+        themeWrapper?.classList.remove("theme-hidden");
+      }
+    }
+
+    lastScrollY = currentScrollY;
+    rafId = null;
+  }
+
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (!rafId) {
+        rafId = requestAnimationFrame(updateNav);
+      }
+    },
+    { passive: true }
+  );
+
+  //smooth scrolling to a linked section
+  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener("click", function (e) {
+      e.preventDefault();
+      const target = e.currentTarget as HTMLAnchorElement;
+      const targetId = target.getAttribute("href")?.substring(1) || "";
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        targetElement.scrollIntoView({
+          behavior: "smooth",
+        });
+      }
+    });
+  });
+
+  //highlight section by observing visible one on the screen by 50%
+  document.addEventListener("DOMContentLoaded", () => {
+    const sections = document.querySelectorAll("section[id]");
+    const navLinks = document.querySelectorAll("nav a[href^='#']");
+    const observerOptions = { threshold: 0.5 };
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          navLinks.forEach((link) => link.classList.remove("active"));
+          const id = entry.target.getAttribute("id");
+          const activeLink = document.querySelector(`nav a[href="#${id}"]`);
+          if (activeLink) {
+            activeLink.classList.add("active");
+          }
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      observerCallback,
+      observerOptions
+    );
+    sections.forEach((section) => observer.observe(section));
+  });
+</script>
+

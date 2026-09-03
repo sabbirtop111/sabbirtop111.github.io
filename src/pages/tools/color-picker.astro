@@ -1,0 +1,160 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import homeData from '../../data/home.json';
+---
+
+<Layout
+  title="Color Picker | GAMER SABBIR"
+  personName={homeData.name}
+  description="Pick a color and copy HEX, RGB, CMYK, HSV, or HSL."
+  siteUrl={homeData.siteUrl}
+  lang="en"
+  socials={homeData.socials}
+>
+  <main class="section-container min-h-[80vh]">
+    <div class="container mx-auto max-w-xl">
+      <a href="/#tools" class="text-sm text-accent mb-6 inline-block">← Home</a>
+      <h1 class="text-3xl font-heading font-bold text-maintext mb-6" data-en="Color picker" data-bn="রং চয়নকারী">Color picker</h1>
+
+      <div class="flex gap-2 mb-4 h-48">
+        <canvas id="sv-canvas" width="220" height="192" class="flex-1 h-full rounded-lg cursor-crosshair"></canvas>
+        <canvas id="hue-canvas" width="28" height="192" class="w-7 h-full rounded-lg cursor-pointer"></canvas>
+      </div>
+      <input id="hue-range" type="range" min="0" max="360" value="270" class="w-full mb-5 accent-red-500" />
+
+      <div class="rounded-xl border border-white/10 p-3 mb-3 flex items-center justify-between">
+        <div>
+          <p class="text-[10px] uppercase text-subtext tracking-widest text-center">HEX</p>
+          <p id="hex-val" class="font-mono text-maintext">#A78BFA</p>
+        </div>
+        <button id="hex-copy" type="button" class="copy-chip"><span class="copy-chip-label">Copy</span></button>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="rounded-xl border border-white/10 p-3">
+          <p class="text-[10px] uppercase text-subtext tracking-widest">RGB</p>
+          <p id="rgb-val" class="font-mono text-sm text-maintext">167, 139, 250</p>
+        </div>
+        <div class="rounded-xl border border-white/10 p-3">
+          <p class="text-[10px] uppercase text-subtext tracking-widest">CMYK</p>
+          <p id="cmyk-val" class="font-mono text-sm text-maintext">33%, 44%, 0%, 2%</p>
+        </div>
+        <div class="rounded-xl border border-white/10 p-3">
+          <p class="text-[10px] uppercase text-subtext tracking-widest">HSV</p>
+          <p id="hsv-val" class="font-mono text-sm text-maintext">252°, 44%, 98%</p>
+        </div>
+        <div class="rounded-xl border border-white/10 p-3">
+          <p class="text-[10px] uppercase text-subtext tracking-widest">HSL</p>
+          <p id="hsl-val" class="font-mono text-sm text-maintext">252°, 92%, 76%</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const sv = document.getElementById('sv-canvas');
+    const hueCanvas = document.getElementById('hue-canvas');
+    const hueRange = document.getElementById('hue-range');
+    if (!(sv instanceof HTMLCanvasElement) || !(hueCanvas instanceof HTMLCanvasElement) || !(hueRange instanceof HTMLInputElement)) return;
+    const svCtx = sv.getContext('2d');
+    const hueCtx = hueCanvas.getContext('2d');
+    if (!svCtx || !hueCtx) return;
+
+    let h = 270, s = 0.44, v = 0.98;
+
+    function hsvToRgb(hh, ss, vv) {
+      const c = vv * ss;
+      const x = c * (1 - Math.abs(((hh / 60) % 2) - 1));
+      const m = vv - c;
+      let r = 0, g = 0, b = 0;
+      if (hh < 60) [r, g, b] = [c, x, 0];
+      else if (hh < 120) [r, g, b] = [x, c, 0];
+      else if (hh < 180) [r, g, b] = [0, c, x];
+      else if (hh < 240) [r, g, b] = [0, x, c];
+      else if (hh < 300) [r, g, b] = [x, 0, c];
+      else [r, g, b] = [c, 0, x];
+      return [Math.round((r + m) * 255), Math.round((g + m) * 255), Math.round((b + m) * 255)];
+    }
+    function toHex(r, g, b) {
+      return '#' + [r, g, b].map((n) => n.toString(16).padStart(2, '0')).join('').toUpperCase();
+    }
+    function toCmyk(r, g, b) {
+      const rr = r / 255, gg = g / 255, bb = b / 255;
+      const k = 1 - Math.max(rr, gg, bb);
+      if (k === 1) return '0%, 0%, 0%, 100%';
+      const c = Math.round(((1 - rr - k) / (1 - k)) * 100);
+      const m = Math.round(((1 - gg - k) / (1 - k)) * 100);
+      const y = Math.round(((1 - bb - k) / (1 - k)) * 100);
+      return `${c}%, ${m}%, ${y}%, ${Math.round(k * 100)}%`;
+    }
+    function toHsl(hh, ss, vv) {
+      const l = vv * (1 - ss / 2);
+      const sl = l === 0 || l === 1 ? 0 : (vv - l) / Math.min(l, 1 - l);
+      return `${Math.round(hh)}°, ${Math.round(sl * 100)}%, ${Math.round(l * 100)}%`;
+    }
+
+    function drawHue() {
+      const grd = hueCtx.createLinearGradient(0, 0, 0, hueCanvas.height);
+      for (let i = 0; i <= 6; i++) grd.addColorStop(i / 6, `hsl(${i * 60},100%,50%)`);
+      hueCtx.fillStyle = grd;
+      hueCtx.fillRect(0, 0, hueCanvas.width, hueCanvas.height);
+    }
+    function drawSV() {
+      const w = sv.width, ht = sv.height;
+      const [r, g, b] = hsvToRgb(h, 1, 1);
+      svCtx.fillStyle = `rgb(${r},${g},${b})`;
+      svCtx.fillRect(0, 0, w, ht);
+      const white = svCtx.createLinearGradient(0, 0, w, 0);
+      white.addColorStop(0, '#fff');
+      white.addColorStop(1, 'rgba(255,255,255,0)');
+      svCtx.fillStyle = white;
+      svCtx.fillRect(0, 0, w, ht);
+      const black = svCtx.createLinearGradient(0, 0, 0, ht);
+      black.addColorStop(0, 'rgba(0,0,0,0)');
+      black.addColorStop(1, '#000');
+      svCtx.fillStyle = black;
+      svCtx.fillRect(0, 0, w, ht);
+      svCtx.beginPath();
+      svCtx.arc(s * w, (1 - v) * ht, 7, 0, Math.PI * 2);
+      svCtx.strokeStyle = '#fff';
+      svCtx.lineWidth = 2;
+      svCtx.stroke();
+    }
+    function publish() {
+      const [r, g, b] = hsvToRgb(h, s, v);
+      const hex = toHex(r, g, b);
+      document.getElementById('hex-val').textContent = hex;
+      document.getElementById('rgb-val').textContent = `${r}, ${g}, ${b}`;
+      document.getElementById('cmyk-val').textContent = toCmyk(r, g, b);
+      document.getElementById('hsv-val').textContent = `${Math.round(h)}°, ${Math.round(s * 100)}%, ${Math.round(v * 100)}%`;
+      document.getElementById('hsl-val').textContent = toHsl(h, s, v);
+      drawSV();
+    }
+
+    hueRange.addEventListener('input', () => {
+      h = Number(hueRange.value);
+      publish();
+    });
+    function pickSV(e) {
+      const rect = sv.getBoundingClientRect();
+      s = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+      v = Math.min(1, Math.max(0, 1 - (e.clientY - rect.top) / rect.height));
+      publish();
+    }
+    sv.addEventListener('pointerdown', (e) => {
+      sv.setPointerCapture(e.pointerId);
+      pickSV(e);
+    });
+    sv.addEventListener('pointermove', (e) => {
+      if (e.buttons) pickSV(e);
+    });
+    document.getElementById('hex-copy')?.addEventListener('click', async () => {
+      const hex = document.getElementById('hex-val')?.textContent || '';
+      try { await navigator.clipboard.writeText(hex); } catch {}
+    });
+
+    drawHue();
+    publish();
+  });
+</script>

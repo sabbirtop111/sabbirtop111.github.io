@@ -1,0 +1,100 @@
+---
+const cards = [
+  {
+    href: '/tools/json',
+    title: 'JSON Formatter',
+    titleBn: 'JSON ফরম্যাটার',
+    html: '<p class="text-xs font-mono text-maintext">{ "UID": 3153401580 }</p><p class="text-xs text-subtext mt-2">Format · Minify</p>'
+  },
+  {
+    href: '/tools/timezone',
+    title: 'Match Time',
+    titleBn: 'ম্যাচ টাইম',
+    html: '<div class="grid grid-cols-2 gap-2 text-xs"><div class="rounded-lg border border-white/10 p-2">BD<br/>9:12 PM</div><div class="rounded-lg border border-white/10 p-2">IND<br/>8:42 PM</div><div class="rounded-lg border border-white/10 p-2">SG<br/>11:12 PM</div><div class="rounded-lg border border-white/10 p-2">US-E<br/>11:12 AM</div></div>'
+  },
+  {
+    href: '/tools/name-style',
+    title: 'Name Style',
+    titleBn: 'নাম স্টাইল',
+    html: '<div class="space-y-2 text-sm text-maintext"><p>𝗦𝗮𝗯𝗯𝗶𝗿</p><p>✦ Sabbir ✦</p><p>『 Sabbir 』</p><p>👑 Sabbir 👑</p></div>'
+  },
+  {
+    href: '/tools/kaomoji',
+    title: 'Kaomoji',
+    titleBn: 'কাওমোজি',
+    html: '<div class="grid grid-cols-2 gap-2 text-sm text-center text-maintext"><div class="rounded-lg border border-white/10 py-3">(＾▽＾)</div><div class="rounded-lg border border-white/10 py-3">(づ｡◕‿◕｡)づ</div><div class="rounded-lg border border-white/10 py-3">(¬‿¬)</div><div class="rounded-lg border border-white/10 py-3">✿◕ ‿ ◕✿</div></div>'
+  },
+  {
+    href: '/tools/color-picker',
+    title: 'Color Picker',
+    titleBn: 'কালার পিকার',
+    html: '<div class="flex gap-2 h-24"><div class="flex-1 rounded-md" style="background:linear-gradient(to right,#fff,#A78BFA),linear-gradient(to top,#000,transparent);background-blend-mode:multiply"></div><div class="w-4 rounded-md" style="background:linear-gradient(#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)"></div></div><p class="text-[11px] font-mono mt-2">#A78BFA</p>'
+  },
+  {
+    href: '/tools/encode',
+    title: 'Base64 / URL',
+    titleBn: 'Base64 / URL',
+    html: '<p class="text-xs font-mono text-maintext break-all">U2FiYmly → Sabbir</p><p class="text-xs font-mono text-subtext mt-2">hello%20world</p>'
+  },
+];
+---
+
+<section class="mt-16 space-y-8">
+  <div class="rounded-2xl border border-accent/15 bg-accent/5 p-6 md:p-8">
+    <p class="text-[10px] uppercase tracking-widest font-bold text-sky-400 mb-1" data-i18n="mini.title">Mini Tools</p>
+    <h3 class="text-xl font-heading font-bold text-maintext mb-1" data-en="Age Calculator" data-bn="বয়স ক্যালকুলেটর">Age Calculator</h3>
+    <p class="text-subtext text-sm font-body mb-5" data-en="Put your birth date. It shows years, months, and days you have lived." data-bn="জন্ম তারিখ দাও। কত বছর, মাস, দিন হয়েছে সেটা দেখাবে।">Put your birth date. It shows years, months, and days you have lived.</p>
+    <div class="flex flex-col sm:flex-row sm:items-end gap-3">
+      <label class="flex-1 text-xs text-subtext">
+        <span data-en="Date of birth" data-bn="জন্ম তারিখ">Date of birth</span>
+        <input id="age-dob" type="date" class="mt-1 w-full px-4 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm focus:outline-none focus:border-accent/50" />
+      </label>
+      <button id="age-btn" type="button" class="px-5 py-2.5 rounded-lg bg-accent/20 border border-accent/40 text-maintext text-sm font-semibold">
+        <span data-en="Calculate" data-bn="হিসাব করো">Calculate</span>
+      </button>
+    </div>
+    <p id="age-result" class="text-maintext font-body text-sm mt-4 min-h-6"></p>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+    {cards.map((card) => (
+      <a href={card.href} class="group rounded-2xl border border-accent/15 bg-accent/5 p-5 hover:border-accent/40 transition-colors block">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-heading font-bold text-maintext" data-en={card.title} data-bn={card.titleBn}>{card.title}</h3>
+          <span class="text-[11px] text-accent" data-i18n="mini.open">Open</span>
+        </div>
+        <div class="tool-preview text-subtext" set:html={card.html} />
+      </a>
+    ))}
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const dobInput = document.getElementById('age-dob');
+    const ageResult = document.getElementById('age-result');
+    const ageBtn = document.getElementById('age-btn');
+    function calc() {
+      if (!(dobInput instanceof HTMLInputElement) || !ageResult || !dobInput.value) return;
+      const dob = new Date(dobInput.value);
+      const today = new Date();
+      let years = today.getFullYear() - dob.getFullYear();
+      let months = today.getMonth() - dob.getMonth();
+      let days = today.getDate() - dob.getDate();
+      if (days < 0) {
+        months -= 1;
+        days += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+      }
+      if (months < 0) {
+        years -= 1;
+        months += 12;
+      }
+      const bn = localStorage.getItem('site-lang') === 'bn';
+      ageResult.textContent = bn
+        ? `তোমার বয়স ${years} বছর, ${months} মাস, ${days} দিন।`
+        : `You are ${years} years, ${months} months, and ${days} days old.`;
+    }
+    ageBtn?.addEventListener('click', calc);
+    dobInput?.addEventListener('change', calc);
+  });
+</script>

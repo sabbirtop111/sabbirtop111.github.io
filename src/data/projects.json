@@ -1,0 +1,91 @@
+[
+  {
+    "title": "GAMER-CORP BOT",
+    "description": "A multi-purpose Discord bot with Free Fire integration (ban check, player info, auto-like), full moderation tools (kick/ban/mute/warn/lock), utility commands (userinfo, translate, avatar), fun commands (meme, joke, quiz), and a live Quran Tilawat streaming system.",
+    "images": [
+      "sabbirtop111.gif",
+      "discord-bot-commands.jpg"
+    ],
+    "tech": [
+      "Discord.js",
+      "Node.js",
+      "Free Fire API"
+    ],
+    "platforms": [
+      "discord"
+    ],
+    "link": "https://discord.com/oauth2/authorize?client_id=1362868759395569674&permissions=8&integration_type=0&scope=bot+applications.commands",
+    "linkLabel": "Add to Server",
+    "category": "Discord Bot",
+    "featured": true
+  },
+  {
+    "title": "Gamersabbir.github.io",
+    "description": "Personal portfolio website showcasing projects, skills, and career highlights — with live tools like a Free Fire player checker, QR share, and bilingual UI.",
+    "images": [
+      "desktop-ui.jpg"
+    ],
+    "tech": [
+      "GitHub Pages",
+      "Web"
+    ],
+    "platforms": [
+      "web"
+    ],
+    "link": "https://github.com/Gamersabbir/Gamersabbir.github.io",
+    "category": "Published Website"
+  },
+  {
+    "title": "PANEL-DLL",
+    "description": "A DLL-based panel project for advanced tooling and system-level functionality.",
+    "images": [
+      "astro-02.jpeg",
+      "#"
+    ],
+    "tech": [
+      "C#",
+      "DLL"
+    ],
+    "platforms": [
+      "web"
+    ],
+    "link": "https://github.com/Gamersabbir/PANEL-DLL",
+    "category": "Hobby"
+  },
+  {
+    "title": "Gamer Sabbir API",
+    "description": "A custom API project built to provide backend services and endpoints for other applications.",
+    "images": [
+      "astro-01.webp",
+      "#"
+    ],
+    "tech": [
+      "API",
+      "Backend"
+    ],
+    "platforms": [
+      "web"
+    ],
+    "link": "https://github.com/Gamersabbir/GAMER-SABBIR-API",
+    "category": "Hobby"
+  },
+  {
+    "title": "Free Fire Player Info API",
+    "description": "A live API that fetches real-time Free Fire player information (nickname, level, ranks, likes, guild, pet, credit score and more) just by entering a player UID. Try the checker live below!",
+    "images": [
+      "astro-01.webp",
+      "#"
+    ],
+    "tech": [
+      "API",
+      "Node.js",
+      "Vercel"
+    ],
+    "platforms": [
+      "web"
+    ],
+    "link": "https://sabbir-paid-info-api.vercel.app/player-info?uid=3153401580&region=bd",
+    "linkLabel": "View API Response",
+    "category": "Hobby"
+  }
+]
