@@ -1,5 +1,5 @@
 # CareerPortfolio: Data-Driven Astro SSG
-Live Demo: [careerportofio.netlify.app](https://careerportofio.netlify.app)
+Live Demo: [sabbirtop111.com](https://sabbirtop111.github.io)
 
 [![Astro](https://img.shields.io/badge/Astro-FF5D01?logo=astro&logoColor=white)](https://astro.build/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
