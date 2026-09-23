@@ -1,0 +1,48 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import homeData from '../../data/home.json';
+---
+
+<Layout
+  title="Kaomoji | GAMER SABBIR"
+  personName={homeData.name}
+  description="Copy cute text faces."
+  siteUrl={homeData.siteUrl}
+  lang="en"
+  socials={homeData.socials}
+>
+  <main class="section-container min-h-[80vh]">
+    <div class="container mx-auto max-w-2xl">
+      <a href="/#tools" class="text-sm text-accent mb-6 inline-block">← Home</a>
+      <p class="text-[10px] uppercase tracking-widest font-bold text-sky-400 mb-1" data-i18n="mini.title">Mini Tools</p>
+      <h1 class="text-3xl font-heading font-bold text-maintext mb-2" data-i18n="mini.kaomoji">Kaomoji</h1>
+      <p class="text-subtext text-sm mb-6" data-en="Tap one to copy." data-bn="কপির জন্য একটায় চাপো।">Tap one to copy.</p>
+      <div id="kaomoji-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+    </div>
+  </main>
+</Layout>
+
+<script is:inline src="/js/name-styles.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const faces = [
+      '(๑˃ᴗ˂)ﻭ', '(づ｡◕‿‿◕｡)づ', '✿◕ ‿ ◕✿', '(＾▽＾)', 'ヽ(°〇°)ﾉ',
+      '(¬‿¬)', '(⌐■_■)', 'ヽ(´▽`)/', '(っ˘ω˘ς )', '（＾ｖ＾）',
+      '(•̀ᴗ•́)و', '(≧◡≦)', '(｡♥‿♥｡)', '¯\\_(ツ)_/¯', '(•‿•)',
+      '(≧∇≦)/', '(´• ω •`)', '(＾ω＾)', '(๑•́ ₃ •̀๑)', '(ﾉ◕ヮ◕)ﾉ*:・ﾟ✧',
+      '(●\'◡\'●)', '(｡•́︿•̀｡)', '(づ￣ ³￣)づ', '(￣▽￣)ノ', '♪(´▽｀)',
+      '(☆▽☆)', '(◕‿◕✿)', '(ᵔᴥᵔ)', '(¬_¬)', '(＾◡＾)'
+    ];
+    const grid = document.getElementById('kaomoji-grid');
+    faces.forEach((face) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'rounded-xl border border-white/10 bg-accent/5 p-3 flex flex-col items-center gap-2';
+      const text = document.createElement('p');
+      text.className = 'text-maintext text-sm text-center min-h-8 flex items-center';
+      text.textContent = face;
+      wrap.appendChild(text);
+      if (window.sabbirCopyChip) wrap.appendChild(window.sabbirCopyChip(face));
+      grid?.appendChild(wrap);
+    });
+  });
+</script>

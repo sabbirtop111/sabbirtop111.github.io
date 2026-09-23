@@ -1,0 +1,11 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import homeData from '../../data/home.json';
+import FreeFireLike from '../../components/freefire-like.astro';
+---
+<Layout title="Free Fire Like | GAMER SABBIR" personName={homeData.name} description="Send Free Fire likes by UID." siteUrl={homeData.siteUrl} lang="en" socials={homeData.socials}>
+  <main class="section-container min-h-[80vh]"><div class="container mx-auto max-w-3xl">
+    <a href="/#tools" class="text-sm text-accent mb-6 inline-block">← Home</a>
+    <FreeFireLike />
+  </div></main>
+</Layout>

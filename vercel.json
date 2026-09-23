@@ -1,0 +1,7 @@
+{
+  "build": {
+    "env": {
+      "SITE_URL": "https://sabbirtop111.vercel.app"
+    }
+  }
+}

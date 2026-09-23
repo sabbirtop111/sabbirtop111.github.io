@@ -1,0 +1,93 @@
+---
+---
+<div id="theme-switcher" class="flex items-center gap-1 p-1 rounded-full border border-accent/20 bg-background/60 backdrop-blur-md shadow-lg">
+  <button type="button" class="theme-choice" data-theme-value="dark" aria-label="Dark theme" title="Dark">
+    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+  </button>
+  <button type="button" class="theme-choice" data-theme-value="light" aria-label="Light theme" title="Light">
+    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+  </button>
+  <button type="button" class="theme-choice" data-theme-value="gamer" aria-label="Gamer theme" title="Gamer">
+    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M6 7h12a5 5 0 0 1 5 5v1a5 5 0 0 1-5 5H6a5 5 0 0 1-5-5v-1a5 5 0 0 1 5-5zm2.2 3.2a1 1 0 0 0-1 1V12H6.5a1 1 0 1 0 0 2H7.2v.8a1 1 0 1 0 2 0V14h.8a1 1 0 1 0 0-2h-.8v-.8a1 1 0 0 0-1-1zM16 11.2a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm2.4 1.6a1 1 0 1 0-2 0 1 1 0 0 0 2 0zM15.2 14.4a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg>
+  </button>
+</div>
+
+<style>
+  .theme-choice {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    color: var(--color-subtext);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+
+  .theme-choice:hover {
+    color: var(--color-maintext);
+    background: color-mix(in srgb, var(--color-accent), transparent 85%);
+  }
+
+  .theme-choice.active {
+    color: var(--color-background);
+    background: var(--color-accent);
+    transform: scale(1.05);
+  }
+</style>
+
+<script>
+  const THEME_BASE = 'innovator';
+
+  function currentMode(theme: string) {
+    if (theme.startsWith('gamer')) return 'gamer';
+    if (theme.endsWith('-light')) return 'light';
+    return 'dark';
+  }
+
+  function themeFromMode(mode: string) {
+    if (mode === 'gamer') return 'gamer-dark';
+    if (mode === 'light') return `${THEME_BASE}-light`;
+    return `${THEME_BASE}-dark`;
+  }
+
+  function applyTheme(theme: string) {
+    const noTransition = document.createElement('style');
+    noTransition.textContent = '*,*::before,*::after{transition:none!important}';
+    document.head.appendChild(noTransition);
+
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+
+    const meta = document.getElementById('theme-color-meta');
+    if (meta) {
+      meta.setAttribute('content', theme.endsWith('-dark') ? '#000000' : '#FFFFFF');
+    }
+
+    document.querySelectorAll('.theme-choice').forEach((btn) => {
+      const mode = btn.getAttribute('data-theme-value');
+      btn.classList.toggle('active', mode === currentMode(theme));
+    });
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        noTransition.remove();
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const active = document.documentElement.getAttribute('data-theme') || themeFromMode('dark');
+    applyTheme(active);
+
+    document.querySelectorAll('.theme-choice').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const mode = btn.getAttribute('data-theme-value') || 'dark';
+        applyTheme(themeFromMode(mode));
+      });
+    });
+  });
+</script>

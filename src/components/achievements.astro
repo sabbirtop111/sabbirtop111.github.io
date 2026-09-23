@@ -1,0 +1,55 @@
+---
+import achievementsData from '../data/achievements.json';
+---
+
+<section id="achievements" class="section-container overflow-hidden">
+  <div class="container mx-auto">
+    <div class="mb-10">
+      <h2 class="text-3xl md:text-4xl font-heading font-bold text-maintext mb-2 flex items-center gap-4">
+        <span class="text-accent">/</span> <span data-i18n="achievements.title">Milestones</span>
+      </h2>
+      <p class="text-subtext font-body text-sm max-w-xl" data-i18n="achievements.subtitle">
+        A few things I've actually shipped and hit along the way.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {achievementsData.map((item) => (
+        <div class="achievement-card rounded-2xl border border-accent/15 bg-accent/5 p-5 text-center">
+          <div class="text-3xl mb-2">{item.emoji}</div>
+          <p class="text-xl font-heading font-bold text-maintext">{item.value}</p>
+          <p class="text-[11px] text-subtext font-body mt-1" data-en={item.label} data-bn={item.labelBn || item.label}>{item.label}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .achievement-card {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .achievement-card.reveal {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
+<script>
+  function revealAchievements() {
+    const cards = document.querySelectorAll('.achievement-card');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('reveal'), i * 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    cards.forEach((c) => observer.observe(c));
+  }
+  window.addEventListener('load', revealAchievements);
+  document.addEventListener('astro:after-swap', revealAchievements);
+</script>

@@ -1,0 +1,11 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import homeData from '../../data/home.json';
+import Timezone from '../../components/timezone.astro';
+---
+<Layout title="Match Time | GAMER SABBIR" personName={homeData.name} description="Convert BD match time to other servers." siteUrl={homeData.siteUrl} lang="en" socials={homeData.socials}>
+  <main class="section-container min-h-[80vh]"><div class="container mx-auto max-w-3xl">
+    <a href="/#tools" class="text-sm text-accent mb-6 inline-block">← Home</a>
+    <Timezone />
+  </div></main>
+</Layout>

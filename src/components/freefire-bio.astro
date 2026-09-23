@@ -1,0 +1,131 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+
+<div class="mt-8 rounded-2xl border border-accent/15 bg-accent/5 p-6 md:p-8">
+  <div class="flex items-center gap-2 mb-1 flex-wrap">
+    <span class="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full border text-cyan-400 bg-cyan-400/10 border-cyan-400/20">
+      <span data-en="Bio API only" data-bn="শুধু Bio API">Bio API only</span>
+    </span>
+  </div>
+  <h3 class="text-xl font-heading font-bold text-maintext mb-1" data-en="Free Fire Bio Updater" data-bn="Free Fire বায়ো আপডেটার">✏️ Free Fire Bio Updater</h3>
+  <p class="text-subtext text-sm font-body mb-5" data-en="Paste your account JWT token and new bio text to update your in-game signature." data-bn="তোমার একাউন্টের JWT টোকেন আর নতুন বায়ো টেক্সট দাও, ইন-গেম সিগনেচার আপডেট হয়ে যাবে।">
+    Paste your account JWT token and new bio text to update your in-game signature.
+  </p>
+
+  <div class="flex flex-col gap-3">
+    <label for="bio-token" class="sr-only">JWT token</label>
+    <textarea id="bio-token" rows="2" placeholder="Paste your account JWT token" autocomplete="off" class="w-full px-4 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm font-body placeholder:text-subtext/50 focus:outline-none focus:border-accent/50 resize-none"></textarea>
+
+    <div class="flex flex-col sm:flex-row gap-3">
+      <input id="bio-text" type="text" maxlength="80" placeholder="New bio text" autocomplete="off" class="flex-1 px-4 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm font-body placeholder:text-subtext/50 focus:outline-none focus:border-accent/50" />
+      <label for="bio-region" class="sr-only">Region</label>
+      <select id="bio-region" aria-label="Region" class="px-3 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm font-body focus:outline-none focus:border-accent/50">
+        <option value="BD">BD</option>
+        <option value="IND">IND</option>
+        <option value="SG">SG</option>
+        <option value="TH">TH</option>
+        <option value="VN">VN</option>
+        <option value="PK">PK</option>
+        <option value="ME">ME</option>
+        <option value="BR">BR</option>
+        <option value="US">US</option>
+      </select>
+      <button id="bio-btn" type="button" class="px-6 py-2.5 rounded-lg bg-accent/20 border border-accent/40 text-maintext text-sm font-body font-semibold hover:bg-accent/30 transition-colors whitespace-nowrap">
+        <span data-en="Update Bio" data-bn="বায়ো আপডেট">Update Bio</span>
+      </button>
+    </div>
+  </div>
+
+  <p id="bio-error" class="text-red-400 text-xs font-body mt-3 hidden"></p>
+  <p id="bio-note" class="text-amber-300 text-xs font-body mt-3 hidden"></p>
+  <div id="bio-loading" class="hidden mt-6 items-center gap-2 text-subtext text-sm font-body">Calling Bio API...</div>
+
+  <div id="bio-result" class="hidden mt-6">
+    <div id="bio-card" class="rounded-2xl border border-cyan-400/30 bg-background/70 p-4 md:p-5">
+      <p class="text-[10px] uppercase tracking-[0.2em] text-cyan-400 mb-2">Gamer Sabbir • Bio Card</p>
+      <p id="bio-card-bio" class="font-heading font-bold text-lg text-maintext mb-3"></p>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
+        <div><p class="text-[10px] text-subtext uppercase">Region</p><p id="bio-card-region" class="font-semibold"></p></div>
+        <div><p class="text-[10px] text-subtext uppercase">Status code</p><p id="bio-card-status" class="font-semibold"></p></div>
+        <div><p class="text-[10px] text-subtext uppercase">Result</p><p id="bio-card-result" class="font-semibold"></p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tokenInput = document.getElementById('bio-token');
+    const bioInput = document.getElementById('bio-text');
+    const regionSelect = document.getElementById('bio-region');
+    const btn = document.getElementById('bio-btn');
+    const errorEl = document.getElementById('bio-error');
+    const noteEl = document.getElementById('bio-note');
+    const loadingEl = document.getElementById('bio-loading');
+    const resultEl = document.getElementById('bio-result');
+    let sending = false;
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = String(value);
+    }
+    function showError(msg) {
+      if (!errorEl) return;
+      errorEl.textContent = msg;
+      errorEl.classList.remove('hidden');
+    }
+    function showNote(msg) {
+      if (!noteEl) return;
+      noteEl.textContent = msg;
+      noteEl.classList.remove('hidden');
+    }
+
+    async function updateBio() {
+      if (sending) return;
+      const token = tokenInput instanceof HTMLTextAreaElement ? tokenInput.value.trim() : '';
+      const bio = bioInput instanceof HTMLInputElement ? bioInput.value.trim() : '';
+      const region = regionSelect instanceof HTMLSelectElement ? regionSelect.value : 'BD';
+
+      errorEl?.classList.add('hidden');
+      noteEl?.classList.add('hidden');
+      resultEl?.classList.add('hidden');
+
+      if (!token) {
+        showError('Paste your account JWT token first.');
+        return;
+      }
+      if (!bio) {
+        showError('Enter the new bio text.');
+        return;
+      }
+
+      sending = true;
+      if (btn instanceof HTMLButtonElement) btn.disabled = true;
+      loadingEl?.classList.remove('hidden');
+
+      const url = 'https://sabbir-paid-api2.vercel.app/updatebio?token=' + encodeURIComponent(token) + '&bio=' + encodeURIComponent(bio) + '&region=' + encodeURIComponent(region);
+      try {
+        const res = await fetch(url, { cache: 'no-store', mode: 'cors' });
+        const data = await res.json();
+        const success = Boolean(data.success);
+        setText('bio-card-bio', '"' + (data.bio_submitted || bio) + '"');
+        setText('bio-card-region', region);
+        setText('bio-card-status', data.status_code ?? res.status);
+        setText('bio-card-result', success ? '✅ Updated' : '❌ Failed');
+        resultEl?.classList.remove('hidden');
+        if (success) showNote('Bio updated successfully.');
+        else showNote(data.error_message || data.message || 'Bio update failed. Check your token and try again.');
+      } catch {
+        showError('Bio API response not readable right now. Check your token, bio and region, then try again.');
+      } finally {
+        sending = false;
+        if (btn instanceof HTMLButtonElement) btn.disabled = false;
+        loadingEl?.classList.add('hidden');
+      }
+    }
+
+    btn?.addEventListener('click', updateBio);
+    bioInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') updateBio(); });
+  });
+</script>

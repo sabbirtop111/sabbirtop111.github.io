@@ -1,0 +1,197 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+
+<div class="mt-8 rounded-2xl border border-accent/15 bg-accent/5 p-6 md:p-8">
+  <div class="flex items-center gap-2 mb-1 flex-wrap">
+    <span class="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full border text-emerald-400 bg-emerald-400/10 border-emerald-400/20">
+      <span data-en="Friend Request API only" data-bn="শুধু Friend Request API">Friend Request API only</span>
+    </span>
+  </div>
+  <h3 class="text-xl font-heading font-bold text-maintext mb-1" data-en="Free Fire Friend Request Sender" data-bn="Free Fire ফ্রেন্ড রিকুয়েস্ট সেন্ডার">🤝 Free Fire Friend Request Sender</h3>
+  <p class="text-subtext text-sm font-body mb-5" data-en="Send a batch of friend requests to any Free Fire UID from our token pool." data-bn="যেকোনো Free Fire UID-তে আমাদের টোকেন পুল থেকে একসাথে অনেক ফ্রেন্ড রিকুয়েস্ট পাঠাও।">
+    Send a batch of friend requests to any Free Fire UID from our token pool.
+  </p>
+
+  <div class="flex flex-col sm:flex-row gap-3">
+    <input id="req-uid" type="text" inputmode="numeric" placeholder="Enter Free Fire UID" value="" autocomplete="off" class="flex-1 px-4 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm font-body placeholder:text-subtext/50 focus:outline-none focus:border-accent/50" />
+    <label for="req-server" class="sr-only">Server</label>
+    <select id="req-server" aria-label="Server" class="px-3 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm font-body focus:outline-none focus:border-accent/50">
+      <option value="BD">BD</option>
+      <option value="IND">IND</option>
+      <option value="SG">SG</option>
+      <option value="TH">TH</option>
+      <option value="VN">VN</option>
+      <option value="PK">PK</option>
+      <option value="ME">ME</option>
+      <option value="BR">BR</option>
+      <option value="US">US</option>
+    </select>
+    <button id="req-btn" type="button" class="px-6 py-2.5 rounded-lg bg-accent/20 border border-accent/40 text-maintext text-sm font-body font-semibold hover:bg-accent/30 transition-colors whitespace-nowrap">
+      <span data-en="Send Requests" data-bn="রিকুয়েস্ট পাঠাও">Send Requests</span>
+    </button>
+  </div>
+
+  <p id="req-error" class="text-red-400 text-xs font-body mt-3 hidden"></p>
+  <p id="req-note" class="text-amber-300 text-xs font-body mt-3 hidden"></p>
+  <div id="req-loading" class="hidden mt-6 items-center gap-2 text-subtext text-sm font-body">Calling Friend Request API... this can take a moment.</div>
+
+  <div id="req-result" class="hidden mt-6">
+    <div class="flex items-center gap-3 pb-4 border-b border-white/10">
+      <div class="min-w-0 flex-1">
+        <p id="req-name" class="text-maintext font-heading font-bold text-base truncate"></p>
+        <p id="req-uid-display" class="text-subtext text-[11px] font-body"></p>
+      </div>
+      <div class="flex flex-wrap gap-2 justify-end">
+        <button id="req-copy" type="button" class="text-[11px] px-3 py-1.5 rounded-full border border-white/10 text-subtext hover:text-maintext hover:border-accent/40 transition-colors">Copy</button>
+        <button id="req-download" type="button" class="text-[11px] px-3 py-1.5 rounded-full border border-emerald-400/40 text-maintext bg-emerald-400/15 hover:bg-emerald-400/25 transition-colors">Download card</button>
+        <button id="req-share" type="button" class="text-[11px] px-3 py-1.5 rounded-full border border-white/10 text-subtext hover:text-maintext hover:border-accent/40 transition-colors">Share</button>
+      </div>
+    </div>
+    <div id="req-card" class="mt-4 rounded-2xl border border-emerald-400/30 bg-background/70 p-4 md:p-5">
+      <p class="text-[10px] uppercase tracking-[0.2em] text-emerald-400 mb-2">Gamer Sabbir • Request Card</p>
+      <p id="req-card-name" class="font-heading font-bold text-xl text-maintext"></p>
+      <p id="req-card-uid" class="text-xs text-subtext mb-3"></p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+        <div><p class="text-[10px] text-subtext uppercase">Success</p><p id="req-success" class="font-semibold"></p></div>
+        <div><p class="text-[10px] text-subtext uppercase">Failed</p><p id="req-failed" class="font-semibold"></p></div>
+        <div><p class="text-[10px] text-subtext uppercase">Server</p><p id="req-server-out" class="font-semibold"></p></div>
+        <div><p class="text-[10px] text-subtext uppercase">Status</p><p id="req-status" class="font-semibold"></p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const uidInput = document.getElementById('req-uid');
+    const serverSelect = document.getElementById('req-server');
+    const btn = document.getElementById('req-btn');
+    const errorEl = document.getElementById('req-error');
+    const noteEl = document.getElementById('req-note');
+    const loadingEl = document.getElementById('req-loading');
+    const resultEl = document.getElementById('req-result');
+    let lastText = '';
+    let lastCard = null;
+    let sending = false;
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = String(value);
+    }
+    function showError(msg) {
+      if (!errorEl) return;
+      errorEl.textContent = msg;
+      errorEl.classList.remove('hidden');
+    }
+    function showNote(msg) {
+      if (!noteEl) return;
+      noteEl.textContent = msg;
+      noteEl.classList.remove('hidden');
+    }
+
+    function renderFromApi(data, server) {
+      const name = data.PlayerName || 'Unknown';
+      const uid = data.UID || '';
+      const success = Number(data.Success ?? 0);
+      const failed = Number(data.Failed ?? 0);
+      const status = Number(data.Status);
+      const label = status === 1 ? '✅ Sent' : '⚠️ None accepted';
+
+      setText('req-name', name);
+      setText('req-uid-display', 'UID: ' + uid);
+      setText('req-card-name', name);
+      setText('req-card-uid', 'UID ' + uid + ' • ' + server);
+      setText('req-success', success);
+      setText('req-failed', failed);
+      setText('req-server-out', server);
+      setText('req-status', label);
+      resultEl?.classList.remove('hidden');
+
+      lastCard = { name, uid, server, success, failed, label };
+      lastText = name + ' (' + uid + ')\nSuccess: ' + success + '\nFailed: ' + failed + '\n' + label;
+
+      showNote(success + ' friend request(s) sent successfully, ' + failed + ' failed.');
+    }
+
+    async function sendRequests() {
+      if (sending) return;
+      const uid = uidInput instanceof HTMLInputElement ? uidInput.value.trim() : '';
+      const server = serverSelect instanceof HTMLSelectElement ? serverSelect.value : 'BD';
+      errorEl?.classList.add('hidden');
+      noteEl?.classList.add('hidden');
+      resultEl?.classList.add('hidden');
+      if (!uid || !/^\d{5,20}$/.test(uid)) {
+        showError('Enter a valid Free Fire UID first.');
+        return;
+      }
+      sending = true;
+      if (btn instanceof HTMLButtonElement) btn.disabled = true;
+      loadingEl?.classList.remove('hidden');
+
+      const url = 'https://sabbir-paid-api2.vercel.app/send_request-dev?uid=' + encodeURIComponent(uid) + '&server=' + encodeURIComponent(server);
+      try {
+        const res = await fetch(url, { cache: 'no-store', mode: 'cors' });
+        const data = await res.json();
+        if (!data || data.Status == null) throw new Error('bad json');
+        renderFromApi(data, server);
+      } catch {
+        showError('Friend Request API response not readable right now. Please try again in a moment.');
+      } finally {
+        sending = false;
+        if (btn instanceof HTMLButtonElement) btn.disabled = false;
+        loadingEl?.classList.add('hidden');
+      }
+    }
+
+    function buildCardCanvas() {
+      if (!lastCard) return null;
+      const canvas = document.createElement('canvas');
+      canvas.width = 900;
+      canvas.height = 520;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+      ctx.fillStyle = '#01140a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = '#34D399';
+      ctx.lineWidth = 8;
+      ctx.strokeRect(24, 24, canvas.width - 48, canvas.height - 48);
+      ctx.fillStyle = '#34D399';
+      ctx.font = '700 22px sans-serif';
+      ctx.fillText('GAMER SABBIR  •  REQUEST CARD', 60, 90);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '700 48px sans-serif';
+      ctx.fillText(String(lastCard.name).slice(0, 22), 60, 160);
+      ctx.fillStyle = '#34D399';
+      ctx.font = '500 22px sans-serif';
+      ctx.fillText('UID ' + lastCard.uid + '   ' + lastCard.server, 60, 200);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '600 26px sans-serif';
+      ctx.fillText('Success ' + lastCard.success, 60, 290);
+      ctx.fillText('Failed  ' + lastCard.failed, 360, 290);
+      ctx.fillText(String(lastCard.label), 60, 350);
+      return canvas;
+    }
+
+    btn?.addEventListener('click', sendRequests);
+    uidInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendRequests(); });
+    document.getElementById('req-copy')?.addEventListener('click', async () => {
+      if (lastText) await navigator.clipboard.writeText(lastText).catch(() => {});
+    });
+    document.getElementById('req-download')?.addEventListener('click', () => {
+      const canvas = buildCardCanvas();
+      if (!canvas) return;
+      const link = document.createElement('a');
+      link.download = 'ff-request-' + (lastCard?.uid || 'player') + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+    document.getElementById('req-share')?.addEventListener('click', async () => {
+      if (!lastText) return;
+      try {
+        if (navigator.share) await navigator.share({ title: 'Free Fire Friend Request Card', text: lastText });
+        else await navigator.clipboard.writeText(lastText);
+      } catch {}
+    });
+  });
+</script>

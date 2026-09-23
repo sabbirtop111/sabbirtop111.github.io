@@ -1,0 +1,58 @@
+{
+  "categories": [
+    {
+      "title": "Languages",
+      "skills": [
+        { "name": "Python", "level": 3, "icon": "mdi:language-python" },
+        { "name": "JavaScript", "level": 3, "icon": "skill-icons:javascript" },
+        { "name": "TypeScript", "level": 2, "icon": "skill-icons:typescript" },
+        { "name": "Java", "level": 2, "icon": "mdi:language-java" },
+        { "name": "C++", "level": 2, "icon": "mdi:language-cpp" },
+        { "name": "C#", "level": 3, "icon": "mdi:language-csharp" },
+        { "name": "PHP", "level": 2, "icon": "mdi:language-php" },
+        { "name": "Ruby", "level": 1, "icon": "mdi:language-ruby" },
+        { "name": "Swift", "level": 1, "icon": "mdi:language-swift" },
+        { "name": "Kotlin", "level": 1, "icon": "mdi:language-kotlin" },
+        { "name": "Go", "level": 1, "icon": "mdi:language-go" },
+        { "name": "Rust", "level": 1, "icon": "mdi:language-rust" },
+        { "name": "SQL", "level": 2, "icon": "mdi:database" },
+        { "name": "HTML", "level": 3, "icon": "skill-icons:html" },
+        { "name": "CSS", "level": 3, "icon": "skill-icons:css" }
+      ]
+    },
+    {
+      "title": "Frontend & Frameworks",
+      "skills": [
+        { "name": "React", "level": 2, "icon": "skill-icons:react-dark" },
+        { "name": "Next.js", "level": 2, "icon": "skill-icons:nextjs-dark" },
+        { "name": "Vue.js", "level": 1, "icon": "mdi:vuejs" },
+        { "name": "Astro", "level": 2, "icon": "skill-icons:astro" },
+        { "name": "Tailwind CSS", "level": 2, "icon": "skill-icons:tailwindcss-dark" },
+        { "name": "Node.js", "level": 2, "icon": "skill-icons:nodejs-dark" }
+      ]
+    },
+    {
+      "title": "Backend, API & Tools",
+      "skills": [
+        { "name": "REST API", "level": 3, "icon": "mdi:api" },
+        { "name": "DLL Development", "level": 2, "icon": "mdi:cog-outline" },
+        { "name": "Discord Bots", "level": 3, "icon": "mdi:discord" },
+        { "name": "Git", "level": 3, "icon": "skill-icons:git" },
+        { "name": "GitHub Pages", "level": 3, "icon": "mdi:github" },
+        { "name": "Linux", "level": 2, "icon": "mdi:linux" },
+        { "name": "Bash", "level": 2, "icon": "mdi:console" },
+        { "name": "Docker", "level": 1, "icon": "skill-icons:docker" }
+      ]
+    },
+    {
+      "title": "Database",
+      "skills": [
+        { "name": "SQLite", "level": 2, "icon": "skill-icons:sqlite" },
+        { "name": "MongoDB", "level": 2, "icon": "skill-icons:mongodb" },
+        { "name": "MySQL", "level": 2, "icon": "mdi:database" },
+        { "name": "PostgreSQL", "level": 1, "icon": "skill-icons:postgresql-dark" },
+        { "name": "Firebase", "level": 2, "icon": "mdi:firebase" }
+      ]
+    }
+  ]
+}
