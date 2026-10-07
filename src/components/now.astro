@@ -1,0 +1,56 @@
+---
+const nowItems = [
+  { en: 'Polishing this site and the live Free Fire tools', bn: 'এই সাইট আর Free Fire টুল গুছাতেছি' },
+  { en: 'GAMER-CORP bot command updates', bn: 'GAMER-CORP বটের নতুন কমান্ড' },
+  { en: 'Taking small website / API / bot work', bn: 'ছোট সাইট, API, বটের কাজ নিচ্ছি' },
+];
+
+const goals = [
+  { en: 'Cleaner APIs', bn: 'পরিষ্কার API', pct: 72 },
+  { en: 'Better site UI', bn: 'সাইট UI', pct: 64 },
+  { en: 'Client-ready bots', bn: 'ক্লায়েন্ট-রেডি বট', pct: 48 },
+];
+---
+
+<section id="now" class="section-container overflow-hidden">
+  <div class="container mx-auto">
+    <div class="mb-8">
+      <h2 class="text-3xl md:text-4xl font-heading font-bold text-maintext mb-2 flex items-center gap-4">
+        <span class="text-accent">/</span> <span data-i18n="now.title">Now</span>
+      </h2>
+      <p class="text-subtext font-body text-sm max-w-xl" data-i18n="now.subtitle">What I am on this week — and what I am trying to get better at.</p>
+      <p class="text-[11px] text-subtext mt-2">Updated 28 Aug 2026</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-5">
+      <div class="rounded-2xl border border-accent/15 bg-accent/5 p-6">
+        <p class="text-[10px] uppercase tracking-widest text-accent font-bold mb-3" data-en="Working on" data-bn="এখন করছি">Working on</p>
+        <ul class="space-y-3">
+          {nowItems.map((item) => (
+            <li class="flex gap-2 text-sm text-maintext font-body">
+              <span class="text-accent">▹</span>
+              <span data-en={item.en} data-bn={item.bn}>{item.en}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="rounded-2xl border border-accent/15 bg-accent/5 p-6">
+        <p class="text-[10px] uppercase tracking-widest text-accent font-bold mb-4" data-i18n="now.goals">Learning goals</p>
+        <div class="space-y-4">
+          {goals.map((g) => (
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-maintext" data-en={g.en} data-bn={g.bn}>{g.en}</span>
+                <span class="text-subtext">{g.pct}%</span>
+              </div>
+              <div class="h-2 rounded-full bg-white/10 overflow-hidden">
+                <div class="h-full rounded-full bg-accent" style={`width:${g.pct}%`}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

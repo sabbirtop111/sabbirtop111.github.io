@@ -1,0 +1,27 @@
+---
+import FreeFireChecker from './freefire-checker.astro';
+import FreeFireLike from './freefire-like.astro';
+import ToolPreviewGrid from './tool-preview-grid.astro';
+import MiscTools from './misc-tools.astro';
+---
+
+<section id="tools" class="section-container overflow-hidden">
+  <div class="container mx-auto">
+    <div class="mb-8">
+      <h2 class="text-3xl md:text-4xl font-heading font-bold text-maintext mb-2 flex items-center gap-4">
+        <span class="text-accent">/</span> <span data-i18n="tools.title">Live Tools</span>
+      </h2>
+      <p class="text-subtext font-body text-sm max-w-xl" data-en="Like and player info stay open here. Other tools are half-and-half cards. Tap one to open the full card on a new page." data-bn="Like আর Info এখানে খোলা। বাকি টুল ৫০/৫০ কার্ড। ট্যাপ করলে নতুন পেজে ফুল কার্ড।">
+        Like and player info stay open here. Other tools are half-and-half cards. Tap one to open the full card on a new page.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+      <FreeFireLike />
+      <FreeFireChecker />
+    </div>
+
+    <ToolPreviewGrid />
+    <MiscTools />
+  </div>
+</section>

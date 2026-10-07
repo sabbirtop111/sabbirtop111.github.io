@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gamer Sabbir • Age</title>
+<style>
+  :root { --bg:#090b12; --text:#f7f4ff; --sub:#b7b3c7; --accent:#c4b5fd; --line:rgba(196,181,253,.32); }
+  * { box-sizing:border-box; }
+  body { margin:0; color:var(--text); font-family:Segoe UI,Inter,sans-serif; background:radial-gradient(800px 360px at 0% 0%, rgba(167,139,250,.28), transparent 55%), var(--bg); }
+  .wrap { max-width:760px; margin:0 auto; padding:28px 16px 48px; }
+  .card { border:1px solid var(--line); border-radius:24px; padding:20px; background:linear-gradient(180deg, rgba(167,139,250,.12), rgba(255,255,255,.03)); margin-bottom:14px; }
+  .badge { display:inline-block; border:1px solid var(--line); border-radius:999px; padding:3px 8px; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); }
+  h1 { margin:10px 0 6px; font-size:30px; }
+  p { color:var(--sub); font-size:14px; }
+  input { width:100%; margin-top:10px; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,.1); background:rgba(0,0,0,.35); color:#fff; font:inherit; }
+  button { margin-top:14px; border:0; border-radius:12px; padding:12px 16px; font-weight:700; color:#1b1230; background:linear-gradient(90deg,#ddd6fe,#f9a8d4); cursor:pointer; }
+  .line { margin-top:16px; color:#fff; min-height:24px; }
+  .boxes { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:12px; }
+  .box { border:1px solid var(--line); border-radius:16px; text-align:center; padding:12px 6px; background:rgba(8,8,14,.55); }
+  .box b { display:block; font-size:26px; color:#fff; }
+  .box span { color:var(--sub); font-size:10px; letter-spacing:.12em; text-transform:uppercase; }
+  .faces { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .face { border:1px solid rgba(255,255,255,.1); border-radius:12px; text-align:center; padding:12px 4px; cursor:pointer; color:#fff; background:transparent; }
+  @media (min-width:700px) { .boxes { grid-template-columns:repeat(6,1fr); } .faces { grid-template-columns:repeat(4,1fr); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <form class="card" id="age">
+    <span class="badge">Age</span>
+    <h1>বয়স হিসাব</h1>
+    <p>তারিখে ট্যাপ করো। ক্যালেন্ডার থেকে তারিখ সেট হবে। সময় নিজে রিয়েল টাইমে চলবে।</p>
+    <input id="dob" type="date" required />
+    <button>Calculate</button>
+    <p class="line" id="line"></p>
+    <div class="boxes" id="boxes"></div>
+  </form>
+  <section class="card">
+    <span class="badge">Kaomoji</span>
+    <h1>কাওমোজি</h1>
+    <p>চাপলে কপি হবে।</p>
+    <div class="faces" id="faces"></div>
+  </section>
+</div>
+<script>
+function parts(dob) {
+  const now = new Date();
+  let years = now.getFullYear() - dob.getFullYear();
+  let months = now.getMonth() - dob.getMonth();
+  let days = now.getDate() - dob.getDate();
+  let hours = now.getHours() - dob.getHours();
+  let minutes = now.getMinutes() - dob.getMinutes();
+  let seconds = now.getSeconds() - dob.getSeconds();
+  if (seconds < 0) { minutes -= 1; seconds += 60; }
+  if (minutes < 0) { hours -= 1; minutes += 60; }
+  if (hours < 0) { days -= 1; hours += 24; }
+  if (days < 0) { months -= 1; days += new Date(now.getFullYear(), now.getMonth(), 0).getDate(); }
+  if (months < 0) { years -= 1; months += 12; }
+  return { years, months, days, hours, minutes, seconds };
+}
+let timer = 0;
+function paint() {
+  const match = document.getElementById("dob").value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) { document.getElementById("line").textContent = "তারিখ বাছো"; return; }
+  const dob = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]), 0, 0, 0);
+  const a = parts(dob);
+  document.getElementById("line").textContent = `${a.years} years ${a.months} months ${a.days} days ${a.hours} hours ${a.minutes} minutes ${a.seconds} seconds old`;
+  const labels = ["Years","Months","Days","Hours","Min","Sec"];
+  document.getElementById("boxes").innerHTML = [a.years,a.months,a.days,a.hours,a.minutes,a.seconds].map((v,i) => `<div class="box"><b>${v}</b><span>${labels[i]}</span></div>`).join("");
+}
+document.getElementById("age").onsubmit = (e) => { e.preventDefault(); paint(); clearInterval(timer); timer = setInterval(paint, 1000); };
+document.getElementById("dob").addEventListener("change", () => document.getElementById("age").requestSubmit());
+const faces = ["(＾▽＾)","(づ｡◕‿◕｡)づ","✿◕ ‿ ◕✿","٩(◕‿◕｡)۶","(✧ω✧)","＼(＾▽＾)／","(ง •̀_•́)ง","(ᵔᴥᵔ)","ʕ•ᴥ•ʔ","(★ω★)","(*^▽^*)","(⌒‿⌒)"];
+const grid = document.getElementById("faces");
+faces.forEach((face) => {
+  const el = document.createElement("button");
+  el.type = "button"; el.className = "face"; el.textContent = face;
+  el.onclick = () => navigator.clipboard.writeText(face);
+  grid.append(el);
+});
+</script>
+</body>
+</html>

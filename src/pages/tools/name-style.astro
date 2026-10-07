@@ -1,0 +1,48 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import homeData from '../../data/home.json';
+---
+
+<Layout
+  title="Name Style | GAMER SABBIR"
+  personName={homeData.name}
+  description="Turn any name into stylish text and copy it."
+  siteUrl={homeData.siteUrl}
+  lang="en"
+  socials={homeData.socials}
+>
+  <main class="section-container min-h-[80vh]">
+    <div class="container mx-auto max-w-2xl">
+      <a href="/#tools" class="text-sm text-accent mb-6 inline-block">← Home</a>
+      <p class="text-[10px] uppercase tracking-widest font-bold text-sky-400 mb-1" data-i18n="mini.title">Mini Tools</p>
+      <h1 class="text-3xl font-heading font-bold text-maintext mb-2" data-i18n="mini.name">Name Style</h1>
+      <p class="text-subtext text-sm mb-6" data-en="Type a name. Copy any style." data-bn="নাম লিখো। যে স্টাইল লাগে কপি করো।">Type a name. Copy any style.</p>
+      <input id="name-input" type="text" value="Sabbir" placeholder="Type your name..." class="w-full px-4 py-3 rounded-xl bg-background/60 border border-white/10 text-maintext mb-5 focus:outline-none focus:border-accent/50" />
+      <div id="name-results" class="space-y-2"></div>
+    </div>
+  </main>
+</Layout>
+
+<script is:inline src="/js/name-styles.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('name-input');
+    const box = document.getElementById('name-results');
+    function render() {
+      if (!box || !(input instanceof HTMLInputElement) || !window.sabbirNameStyles) return;
+      box.innerHTML = '';
+      window.sabbirNameStyles(input.value).forEach((item) => {
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-accent/5 px-3 py-2.5';
+        const left = document.createElement('div');
+        left.className = 'min-w-0';
+        left.innerHTML = `<p class="text-[10px] uppercase text-subtext">${item.label}</p><p class="text-maintext truncate">${item.text}</p>`;
+        row.appendChild(left);
+        row.appendChild(window.sabbirCopyChip(item.text));
+        box.appendChild(row);
+      });
+    }
+    input?.addEventListener('input', render);
+    render();
+  });
+</script>

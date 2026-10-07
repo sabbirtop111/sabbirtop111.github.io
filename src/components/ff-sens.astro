@@ -1,0 +1,86 @@
+---
+const fields = [
+  { id: 'gen', en: 'General', bn: 'জেনারেল' },
+  { id: 'red', en: 'Red Dot', bn: 'রেড ডট' },
+  { id: 'x2', en: '2x', bn: '২x' },
+  { id: 'x4', en: '4x', bn: '৪x' },
+  { id: 'sniper', en: 'Sniper', bn: 'স্নাইপার' },
+];
+---
+
+<div class="mt-8 rounded-2xl border border-accent/15 bg-accent/5 p-6 md:p-8">
+  <p class="text-[10px] uppercase tracking-widest font-bold text-orange-400 mb-1">FF Tool</p>
+  <h3 class="text-xl font-heading font-bold text-maintext mb-1" data-i18n="sens.title">Sensitivity Saver</h3>
+  <p class="text-subtext text-sm mb-5" data-i18n="sens.desc">Save your Free Fire sensitivity on this phone. Nothing is uploaded.</p>
+
+  <div class="grid sm:grid-cols-2 gap-3 mb-4">
+    <input id="sens-name" type="text" placeholder="Preset name (e.g. My HUD)" class="px-4 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm" />
+    {fields.map((f) => (
+      <label class="text-xs text-subtext">
+        <span data-en={f.en} data-bn={f.bn}>{f.en}</span>
+        <input data-sens={f.id} type="number" min="0" max="200" class="mt-1 w-full px-3 py-2 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm" />
+      </label>
+    ))}
+  </div>
+  <div class="flex flex-wrap gap-2 mb-4">
+    <button id="sens-save" type="button" class="px-4 py-2 rounded-lg bg-accent/20 border border-accent/40 text-sm font-semibold">Save</button>
+    <button id="sens-copy" type="button" class="copy-chip"><span class="copy-chip-label">Copy</span></button>
+  </div>
+  <div id="sens-list" class="space-y-2"></div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const KEY = 'ff-sens-presets';
+    const fields = ['gen', 'red', 'x2', 'x4', 'sniper'];
+    const list = document.getElementById('sens-list');
+
+    function read() {
+      try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; }
+    }
+    function write(items) {
+      localStorage.setItem(KEY, JSON.stringify(items));
+    }
+    function current() {
+      const name = document.getElementById('sens-name');
+      const out = { name: name instanceof HTMLInputElement ? name.value.trim() || 'Preset' : 'Preset' };
+      fields.forEach((id) => {
+        const el = document.querySelector(`[data-sens="${id}"]`);
+        out[id] = el instanceof HTMLInputElement ? el.value : '';
+      });
+      return out;
+    }
+    function render() {
+      if (!list) return;
+      const items = read();
+      list.innerHTML = '';
+      items.forEach((item, i) => {
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between gap-2 rounded-lg border border-white/10 px-3 py-2 text-sm';
+        row.innerHTML = `<p class="text-maintext">${item.name}: G ${item.gen || '-'} · RD ${item.red || '-'} · 2x ${item.x2 || '-'} · 4x ${item.x4 || '-'} · S ${item.sniper || '-'}</p>`;
+        const del = document.createElement('button');
+        del.className = 'text-[11px] text-subtext';
+        del.textContent = 'Delete';
+        del.addEventListener('click', () => {
+          const next = read().filter((_, idx) => idx !== i);
+          write(next);
+          render();
+        });
+        row.appendChild(del);
+        list.appendChild(row);
+      });
+    }
+    document.getElementById('sens-save')?.addEventListener('click', () => {
+      const items = read();
+      items.unshift(current());
+      write(items.slice(0, 8));
+      render();
+    });
+    document.getElementById('sens-copy')?.addEventListener('click', async () => {
+      const item = current();
+      const text = `${item.name}\nGeneral ${item.gen}\nRed Dot ${item.red}\n2x ${item.x2}\n4x ${item.x4}\nSniper ${item.sniper}`;
+      try { await navigator.clipboard.writeText(text); } catch {}
+    });
+    render();
+  });
+</script>

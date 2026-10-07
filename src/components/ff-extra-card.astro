@@ -1,0 +1,218 @@
+---
+interface Field {
+  name: string;
+  label: string;
+  labelBn: string;
+  placeholder: string;
+  type?: string;
+  tag?: "input" | "textarea" | "select";
+}
+
+interface ToolCard {
+  id: string;
+  badge: string;
+  badgeBn: string;
+  title: string;
+  titleBn: string;
+  text: string;
+  textBn: string;
+  button: string;
+  buttonBn: string;
+  tone: string;
+  fields: Field[];
+}
+
+const { tool } = Astro.props as { tool: ToolCard };
+const regions = ["BD", "IND", "SG", "TH", "VN", "ID", "PK", "ME", "BR", "US", "SAC", "NA", "RU", "TW", "CIS", "EUROPE"];
+---
+
+<div class="rounded-2xl border border-accent/15 bg-accent/5 p-6 md:p-8" data-tool={tool.id}>
+  <div class="flex items-center gap-2 mb-1 flex-wrap">
+    <span class={`text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full border ${tool.tone}`}>
+      <span data-en={tool.badge} data-bn={tool.badgeBn}>{tool.badge}</span>
+    </span>
+    <span class="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full border text-accent bg-accent/10 border-accent/20">
+      <span data-en="Free Tool" data-bn="ফ্রি টুল">Free Tool</span>
+    </span>
+  </div>
+  <h3 class="text-xl font-heading font-bold text-maintext mb-1" data-en={tool.title} data-bn={tool.titleBn}>{tool.title}</h3>
+  <p class="text-subtext text-sm font-body mb-5" data-en={tool.text} data-bn={tool.textBn}>{tool.text}</p>
+
+  <form class="ff-extra-form space-y-3" data-id={tool.id}>
+    {tool.fields.map((field) => (
+      <label class="block text-xs text-subtext">
+        <span data-en={field.label} data-bn={field.labelBn}>{field.label}</span>
+        {field.tag === "select" ? (
+          <select name={field.name} class="mt-1 w-full px-4 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm focus:outline-none focus:border-accent/50">
+            {regions.map((region) => <option value={region}>{region}</option>)}
+          </select>
+        ) : field.tag === "textarea" ? (
+          <textarea name={field.name} rows="3" required placeholder={field.placeholder} class="mt-1 w-full px-4 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm focus:outline-none focus:border-accent/50"></textarea>
+        ) : (
+          <input name={field.name} type={field.type || "text"} required placeholder={field.placeholder} autocomplete="off" class="mt-1 w-full px-4 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm focus:outline-none focus:border-accent/50" />
+        )}
+      </label>
+    ))}
+    <button type="submit" class="px-6 py-2.5 rounded-lg bg-accent/20 border border-accent/40 text-maintext text-sm font-semibold hover:bg-accent/30">
+      <span data-en={tool.button} data-bn={tool.buttonBn}>{tool.button}</span>
+    </button>
+  </form>
+
+  <p class="ff-extra-error text-red-400 text-xs mt-3 hidden"></p>
+  <div class="ff-extra-loading hidden mt-6 text-subtext text-sm" data-en="Working..." data-bn="কাজ চলছে...">Working...</div>
+  <div class="ff-extra-result hidden mt-6 rounded-2xl border border-accent/30 bg-background/70 p-4 md:p-5">
+    <p class="text-[10px] uppercase tracking-[0.2em] text-accent mb-2">Gamer Sabbir</p>
+    <p class="ff-extra-title font-heading font-bold text-xl text-maintext"></p>
+    <p class="ff-extra-sub text-xs text-subtext mb-3"></p>
+    <div class="ff-extra-stats grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm"></div>
+    <div class="ff-extra-time hidden mt-4 grid grid-cols-4 gap-2 text-center"></div>
+    <p class="ff-extra-note mt-3 text-xs text-subtext break-all"></p>
+  </div>
+</div>
+
+<script>
+  const routes = {
+    ban: (d) => "/ban-check?uid=" + encodeURIComponent(d.uid),
+    visit: (d) => "/visit?uid=" + encodeURIComponent(d.uid) + "&server=" + encodeURIComponent(d.server),
+    request: (d) => "/send_request-dev?uid=" + encodeURIComponent(d.uid) + "&server=" + encodeURIComponent(d.server),
+    bio: (d) => "/updatebio?token=" + encodeURIComponent(d.token) + "&bio=" + encodeURIComponent(d.bio) + "&region=" + encodeURIComponent(d.region),
+    token: (d) => "/token?uid=" + encodeURIComponent(d.uid) + "&password=" + encodeURIComponent(d.password),
+    access: (d) => "/access-jwt?access_token=" + encodeURIComponent(d.access_token),
+    eat: (d) => "/eat-to-token?eat=" + encodeURIComponent(d.eat),
+    bind: (d) => "/bind-info?access_token=" + encodeURIComponent(d.access_token),
+    platforms: (d) => "/bound-platforms?access_token=" + encodeURIComponent(d.access_token),
+    revoke: (d) => "/revoke-token?access_token=" + encodeURIComponent(d.access_token),
+  };
+
+  function parts(total) {
+    const n = Math.max(0, Math.floor(Number(total) || 0));
+    return {
+      d: Math.floor(n / 86400),
+      h: Math.floor((n % 86400) / 3600),
+      m: Math.floor((n % 3600) / 60),
+      s: n % 60,
+    };
+  }
+
+  function stat(label, value) {
+    const box = document.createElement("div");
+    const k = document.createElement("p");
+    k.className = "text-[10px] text-subtext uppercase";
+    k.textContent = label;
+    const v = document.createElement("p");
+    v.className = "font-semibold text-maintext";
+    v.textContent = value == null || value === "" ? "—" : String(value);
+    box.append(k, v);
+    return box;
+  }
+
+  function fillTime(node, seconds) {
+    const t = parts(seconds);
+    node.innerHTML = "";
+    [["Days", t.d], ["Hours", t.h], ["Min", t.m], ["Sec", t.s]].forEach(([label, value]) => {
+      const box = document.createElement("div");
+      box.className = "rounded-xl border border-white/10 bg-black/20 py-2";
+      const n = document.createElement("p");
+      n.className = "text-lg font-heading font-bold text-maintext";
+      n.textContent = String(value);
+      const l = document.createElement("p");
+      l.className = "text-[10px] uppercase text-subtext";
+      l.textContent = label;
+      box.append(n, l);
+      node.append(box);
+    });
+    node.classList.remove("hidden");
+  }
+
+  function paint(card, data) {
+    const title = card.querySelector(".ff-extra-title");
+    const sub = card.querySelector(".ff-extra-sub");
+    const stats = card.querySelector(".ff-extra-stats");
+    const time = card.querySelector(".ff-extra-time");
+    const note = card.querySelector(".ff-extra-note");
+    stats.innerHTML = "";
+    time.classList.add("hidden");
+    note.textContent = "";
+    const id = card.getAttribute("data-tool");
+    const player = data.player || data.player_info || {};
+    if (id === "ban") {
+      const info = data.ban_info || {};
+      title.textContent = info.status || "Ban check";
+      sub.textContent = "UID " + (data.uid || "");
+      stats.append(stat("Status", info.status), stat("Banned", info.is_banned ? "Yes" : "No"));
+      if (info.period != null) fillTime(time, info.period);
+    } else if (id === "visit") {
+      title.textContent = data.nickname || "Visit";
+      sub.textContent = "UID " + (data.uid || "");
+      stats.append(stat("Success", data.success), stat("Fail", data.fail), stat("Level", data.level), stat("Likes", data.likes), stat("Region", data.region));
+    } else if (id === "request") {
+      title.textContent = data.PlayerName || "Request";
+      sub.textContent = "UID " + (data.UID || "");
+      stats.append(stat("Success", data.Success), stat("Failed", data.Failed), stat("Server", data.Server), stat("Status", data.Status));
+    } else if (id === "bio") {
+      title.textContent = data.success ? "Bio updated" : "Bio not updated";
+      sub.textContent = data.bio_submitted || "";
+      stats.append(stat("Success", data.success ? "Yes" : "No"), stat("Code", data.status_code));
+    } else if (id === "token") {
+      title.textContent = data.real_uid || "Token";
+      sub.textContent = data.status || "";
+      stats.append(stat("UID", data.real_uid), stat("Status", data.status), stat("Time", data.time));
+      note.textContent = data.token || "";
+    } else if (id === "access") {
+      title.textContent = player.nickname || "Token ready";
+      sub.textContent = [player.region, player.platform_name].filter(Boolean).join(" • ");
+      stats.append(stat("UID", player.account_id), stat("Region", player.region), stat("Platform", player.platform_name));
+      note.textContent = data.jwt || "";
+    } else if (id === "eat") {
+      title.textContent = data.nickname || "Access token";
+      sub.textContent = "UID " + (data.account_id || "");
+      stats.append(stat("UID", data.account_id), stat("Region", data.region), stat("Name", data.nickname));
+      note.textContent = data.access_token || "";
+    } else if (id === "bind") {
+      const bind = data.bind || {};
+      title.textContent = player.nickname || "Bind info";
+      sub.textContent = data.summary || "";
+      stats.append(stat("UID", player.uid), stat("Region", player.region), stat("Email", bind.email || "None"), stat("Pending", bind.pending_email || "None"));
+      fillTime(time, bind.countdown_seconds);
+    } else if (id === "platforms") {
+      title.textContent = "Platforms";
+      sub.textContent = "Linked and available";
+      stats.append(stat("Bound", (data.bound || []).map((x) => x.name).join(", ") || "None"), stat("Available", (data.available || []).map((x) => x.name).join(", ") || "None"));
+    } else if (id === "revoke") {
+      title.textContent = (data.player && data.player.nickname) || "Revoked";
+      sub.textContent = data.message || "";
+      stats.append(stat("UID", data.player && data.player.account_id), stat("Region", data.player && data.player.region), stat("Status", data.status));
+    } else {
+      title.textContent = data.status || "Done";
+    }
+  }
+
+  document.querySelectorAll(".ff-extra-form").forEach((form) => {
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const card = form.closest("[data-tool]");
+      const id = form.getAttribute("data-id");
+      const build = routes[id];
+      if (!card || !build) return;
+      const data = Object.fromEntries(new FormData(form).entries());
+      const error = card.querySelector(".ff-extra-error");
+      const loading = card.querySelector(".ff-extra-loading");
+      const result = card.querySelector(".ff-extra-result");
+      error.classList.add("hidden");
+      result.classList.add("hidden");
+      loading.classList.remove("hidden");
+      try {
+        const res = await fetch("https://sabbir-paid-api2.vercel.app" + build(data), { cache: "no-store", mode: "cors" });
+        const payload = await res.json();
+        if (payload.error || payload.status === "error") throw new Error(payload.error || "Request failed");
+        paint(card, payload);
+        result.classList.remove("hidden");
+      } catch (err) {
+        error.textContent = err && err.message ? err.message : "Could not reach the tool. Try again.";
+        error.classList.remove("hidden");
+      } finally {
+        loading.classList.add("hidden");
+      }
+    });
+  });
+</script>

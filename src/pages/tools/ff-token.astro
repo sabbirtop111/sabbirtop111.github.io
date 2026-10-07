@@ -1,0 +1,12 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import homeData from '../../data/home.json';
+import Extra from '../../components/ff-extra-card.astro';
+const tool = { id: "token", badge: "Token", badgeBn: "টোকেন", title: "UID to Token", titleBn: "UID থেকে টোকেন", text: "UID and password stay on this page only.", textBn: "UID আর পাসওয়ার্ড এই পেজেই থাকবে।", button: "Get token", buttonBn: "টোকেন নাও", tone: "text-emerald-300 bg-emerald-400/10 border-emerald-400/20", fields: [{ name: "uid", label: "UID", labelBn: "UID", placeholder: "Enter UID" }, { name: "password", label: "Password", labelBn: "পাসওয়ার্ড", placeholder: "Password", type: "password" }] };
+---
+<Layout title="UID to Token | GAMER SABBIR" personName={homeData.name} description="Make a game token from UID and password." siteUrl={homeData.siteUrl} lang="en" socials={homeData.socials}>
+  <main class="section-container min-h-[80vh]"><div class="container mx-auto max-w-3xl">
+    <a href="/#tools" class="text-sm text-accent mb-6 inline-block">← Home</a>
+    <Extra tool={tool} />
+  </div></main>
+</Layout>

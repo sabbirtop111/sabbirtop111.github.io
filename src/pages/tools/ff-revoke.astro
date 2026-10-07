@@ -1,0 +1,12 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import homeData from '../../data/home.json';
+import Extra from '../../components/ff-extra-card.astro';
+const tool = { id: "revoke", badge: "Logout", badgeBn: "লগআউট", title: "Revoke Token", titleBn: "টোকেন বাতিল", text: "Paste an access token to log it out.", textBn: "অ্যাক্সেস টোকেন দিয়ে লগআউট করো।", button: "Revoke", buttonBn: "বাতিল করো", tone: "text-rose-300 bg-rose-400/10 border-rose-400/20", fields: [{ name: "access_token", label: "Access token", labelBn: "অ্যাক্সেস টোকেন", placeholder: "Paste token", tag: "textarea" }] };
+---
+<Layout title="Revoke Token | GAMER SABBIR" personName={homeData.name} description="Log out an access token." siteUrl={homeData.siteUrl} lang="en" socials={homeData.socials}>
+  <main class="section-container min-h-[80vh]"><div class="container mx-auto max-w-3xl">
+    <a href="/#tools" class="text-sm text-accent mb-6 inline-block">← Home</a>
+    <Extra tool={tool} />
+  </div></main>
+</Layout>

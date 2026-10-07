@@ -1,0 +1,12 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import homeData from '../../data/home.json';
+import Extra from '../../components/ff-extra-card.astro';
+const tool = { id: "ban", badge: "Ban Check", badgeBn: "ব্যান চেক", title: "Ban Check", titleBn: "ব্যান চেক", text: "Enter a UID to see ban status.", textBn: "UID দিয়ে ব্যান স্ট্যাটাস দেখো।", button: "Check", buttonBn: "চেক করো", tone: "text-rose-300 bg-rose-400/10 border-rose-400/20", fields: [{ name: "uid", label: "UID", labelBn: "UID", placeholder: "Enter UID" }] };
+---
+<Layout title="Ban Check | GAMER SABBIR" personName={homeData.name} description="Check if a Free Fire UID is banned." siteUrl={homeData.siteUrl} lang="en" socials={homeData.socials}>
+  <main class="section-container min-h-[80vh]"><div class="container mx-auto max-w-3xl">
+    <a href="/#tools" class="text-sm text-accent mb-6 inline-block">← Home</a>
+    <Extra tool={tool} />
+  </div></main>
+</Layout>

@@ -1,0 +1,26 @@
+[
+  {
+    "company": "University of Technology",
+    "role": "Bachelor of Science (B.Sc.) — Computer Science & Engineering",
+    "period": "2024 - 2028",
+    "type": "Student",
+    "description": "Currently pursuing a B.Sc. in Computer Science & Engineering, focusing on programming, software development, and computer systems while building real-world projects on the side.",
+    "skills": ["Computer Science", "Software Engineering", "Current Student"]
+  },
+  {
+    "company": "Self-Taught Journey",
+    "role": "Game • API • Web Developer",
+    "period": "Present",
+    "type": "Self-Employed",
+    "description": "Learning and building independently — creating games, custom APIs, Discord bots, and web applications. Constantly exploring new technologies and shipping personal projects on GitHub.",
+    "skills": ["Game Development", "API Development", "Web Development", "Discord Bots"]
+  },
+  {
+    "company": "Barisal, Bangladesh",
+    "role": "Where the journey began",
+    "period": "Origin",
+    "type": "Hometown",
+    "description": "Originally from Barisal — now based in Chittagong, continuing to grow as a developer and build projects that reach a wider audience.",
+    "skills": ["Growth", "Adaptability"]
+  }
+]

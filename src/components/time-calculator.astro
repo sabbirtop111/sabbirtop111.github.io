@@ -1,0 +1,54 @@
+---
+---
+<section class="mt-8 rounded-2xl border border-accent/15 bg-accent/5 p-6 md:p-8">
+  <span class="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full border text-accent bg-accent/10 border-accent/20">Time</span>
+  <h3 class="text-xl font-heading font-bold text-maintext mt-2 mb-1" data-en="Time calculator" data-bn="সময় হিসাব">Time calculator</h3>
+  <p class="text-subtext text-sm mb-4" data-en="Works offline. Seconds or two dates become days, hours, minutes and seconds." data-bn="নেট ছাড়াই চলে। সেকেন্ড বা দুই তারিখ থেকে দিন, ঘণ্টা, মিনিট, সেকেন্ড।">
+    Works offline. Seconds or two dates become days, hours, minutes and seconds.
+  </p>
+  <form id="time-calc" class="grid sm:grid-cols-2 gap-3">
+    <label class="text-xs text-subtext">Seconds
+      <input id="time-sec" type="number" min="0" placeholder="90061" class="mt-1 w-full px-4 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm" />
+    </label>
+    <label class="text-xs text-subtext">From
+      <input id="time-from" type="datetime-local" class="mt-1 w-full px-4 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm" />
+    </label>
+    <label class="text-xs text-subtext sm:col-span-2">To
+      <input id="time-to" type="datetime-local" class="mt-1 w-full px-4 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm" />
+    </label>
+    <button type="submit" class="sm:col-span-2 px-5 py-2.5 rounded-lg bg-accent/20 border border-accent/40 text-maintext text-sm font-semibold">Calculate</button>
+  </form>
+  <div id="time-calc-out" class="hidden mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2 text-center"></div>
+</section>
+<script>
+  document.getElementById("time-calc")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const sec = Number(document.getElementById("time-sec").value || 0);
+    const from = document.getElementById("time-from").value;
+    const to = document.getElementById("time-to").value;
+    let total = sec;
+    if (from && to) total = Math.abs(new Date(to) - new Date(from)) / 1000;
+    total = Math.max(0, Math.floor(total));
+    const bits = [
+      ["Days", Math.floor(total / 86400)],
+      ["Hours", Math.floor((total % 86400) / 3600)],
+      ["Min", Math.floor((total % 3600) / 60)],
+      ["Sec", total % 60],
+    ];
+    const out = document.getElementById("time-calc-out");
+    out.innerHTML = "";
+    bits.forEach(([label, value]) => {
+      const box = document.createElement("div");
+      box.className = "rounded-xl border border-white/10 bg-black/20 py-3";
+      const n = document.createElement("p");
+      n.className = "text-xl font-heading font-bold text-maintext";
+      n.textContent = String(value);
+      const l = document.createElement("p");
+      l.className = "text-[10px] uppercase text-subtext";
+      l.textContent = label;
+      box.append(n, l);
+      out.append(box);
+    });
+    out.classList.remove("hidden");
+  });
+</script>

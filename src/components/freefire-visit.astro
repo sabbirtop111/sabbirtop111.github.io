@@ -1,0 +1,253 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+
+<div class="mt-8 rounded-2xl border border-accent/15 bg-accent/5 p-6 md:p-8">
+  <div class="flex items-center gap-2 mb-1 flex-wrap">
+    <span class="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full border text-orange-400 bg-orange-400/10 border-orange-400/20">
+      <span data-en="Visit API only" data-bn="শুধু Visit API">Visit API only</span>
+    </span>
+    <span class="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full border text-orange-400 bg-orange-400/10 border-orange-400/20">
+      <span data-en="~150 per ping" data-bn="~১৫০ প্রতি পিং">~150 per ping</span>
+    </span>
+  </div>
+  <h3 class="text-xl font-heading font-bold text-maintext mb-1" data-en="Free Fire Visit Booster" data-bn="Free Fire ভিজিট বুস্টার">👀 Free Fire Visit Booster</h3>
+  <p class="text-subtext text-sm font-body mb-5" data-en="Enter a target visit count — the site works out how many pings are needed (~150 visits per ping) and sends them automatically." data-bn="তোমার টার্গেট ভিজিট সংখ্যা দাও — ওয়েবসাইট নিজে হিসাব করে কতবার পিং করতে হবে (প্রতি পিং-এ ~১৫০ ভিজিট) আর সয়ংক্রিয়ভাবে পাঠিয়ে দেয়।">
+    Enter a target visit count — the site works out how many pings are needed (~150 visits per ping) and sends them automatically.
+  </p>
+
+  <div class="flex flex-col sm:flex-row gap-3">
+    <input id="visit-uid" type="text" inputmode="numeric" placeholder="Enter Free Fire UID" value="" autocomplete="off" class="flex-1 px-4 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm font-body placeholder:text-subtext/50 focus:outline-none focus:border-accent/50" />
+    <label for="visit-server" class="sr-only">Server</label>
+    <select id="visit-server" aria-label="Server" class="px-3 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm font-body focus:outline-none focus:border-accent/50">
+      <option value="BD">BD</option>
+      <option value="IND">IND</option>
+      <option value="SG">SG</option>
+      <option value="TH">TH</option>
+      <option value="VN">VN</option>
+      <option value="PK">PK</option>
+      <option value="ME">ME</option>
+      <option value="BR">BR</option>
+      <option value="US">US</option>
+    </select>
+  </div>
+
+  <div class="flex flex-col sm:flex-row gap-3 mt-3">
+    <label for="visit-count" class="sr-only">Target visit count</label>
+    <input id="visit-count" type="number" min="1" step="1" inputmode="numeric" placeholder="Target visits (e.g. 500)" value="500" class="flex-1 px-4 py-2.5 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm font-body placeholder:text-subtext/50 focus:outline-none focus:border-accent/50" />
+    <button id="visit-btn" type="button" class="px-6 py-2.5 rounded-lg bg-accent/20 border border-accent/40 text-maintext text-sm font-body font-semibold hover:bg-accent/30 transition-colors whitespace-nowrap">
+      <span data-en="Boost Visits" data-bn="ভিজিট বাড়াও">Boost Visits</span>
+    </button>
+  </div>
+  <p id="visit-calc" class="text-subtext text-xs font-body mt-2"></p>
+
+  <p id="visit-error" class="text-red-400 text-xs font-body mt-3 hidden"></p>
+  <p id="visit-note" class="text-amber-300 text-xs font-body mt-3 hidden"></p>
+
+  <div id="visit-progress" class="hidden mt-6">
+    <div class="flex items-center justify-between text-xs text-subtext font-body mb-2">
+      <span id="visit-progress-label">Pinging 0/0...</span>
+      <span id="visit-progress-pct">0%</span>
+    </div>
+    <div class="w-full h-2 rounded-full bg-white/10 overflow-hidden">
+      <div id="visit-progress-bar" class="h-full bg-orange-400 transition-all duration-300" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <div id="visit-result" class="hidden mt-6">
+    <div class="flex items-center gap-3 pb-4 border-b border-white/10">
+      <div class="min-w-0 flex-1">
+        <p id="visit-name" class="text-maintext font-heading font-bold text-base truncate"></p>
+        <p id="visit-uid-display" class="text-subtext text-[11px] font-body"></p>
+      </div>
+      <div class="flex flex-wrap gap-2 justify-end">
+        <button id="visit-copy" type="button" class="text-[11px] px-3 py-1.5 rounded-full border border-white/10 text-subtext hover:text-maintext hover:border-accent/40 transition-colors">Copy</button>
+        <button id="visit-download" type="button" class="text-[11px] px-3 py-1.5 rounded-full border border-orange-400/40 text-maintext bg-orange-400/15 hover:bg-orange-400/25 transition-colors">Download card</button>
+        <button id="visit-share" type="button" class="text-[11px] px-3 py-1.5 rounded-full border border-white/10 text-subtext hover:text-maintext hover:border-accent/40 transition-colors">Share</button>
+      </div>
+    </div>
+    <div id="visit-card" class="mt-4 rounded-2xl border border-orange-400/30 bg-background/70 p-4 md:p-5">
+      <p class="text-[10px] uppercase tracking-[0.2em] text-orange-400 mb-2">Gamer Sabbir • Visit Card</p>
+      <p id="visit-card-name" class="font-heading font-bold text-xl text-maintext"></p>
+      <p id="visit-card-uid" class="text-xs text-subtext mb-3"></p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+        <div><p class="text-[10px] text-subtext uppercase">Target</p><p id="visit-target" class="font-semibold"></p></div>
+        <div><p class="text-[10px] text-subtext uppercase">Pings sent</p><p id="visit-pings" class="font-semibold"></p></div>
+        <div><p class="text-[10px] text-subtext uppercase">Est. visits added</p><p id="visit-added" class="font-semibold"></p></div>
+        <div><p class="text-[10px] text-subtext uppercase">Status</p><p id="visit-status" class="font-semibold"></p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const VISITS_PER_PING = 150;
+    const uidInput = document.getElementById('visit-uid');
+    const serverSelect = document.getElementById('visit-server');
+    const countInput = document.getElementById('visit-count');
+    const btn = document.getElementById('visit-btn');
+    const calcEl = document.getElementById('visit-calc');
+    const errorEl = document.getElementById('visit-error');
+    const noteEl = document.getElementById('visit-note');
+    const progressEl = document.getElementById('visit-progress');
+    const progressLabel = document.getElementById('visit-progress-label');
+    const progressPct = document.getElementById('visit-progress-pct');
+    const progressBar = document.getElementById('visit-progress-bar');
+    const resultEl = document.getElementById('visit-result');
+    let lastText = '';
+    let lastCard = null;
+    let sending = false;
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = String(value);
+    }
+    function showError(msg) {
+      if (!errorEl) return;
+      errorEl.textContent = msg;
+      errorEl.classList.remove('hidden');
+    }
+    function showNote(msg) {
+      if (!noteEl) return;
+      noteEl.textContent = msg;
+      noteEl.classList.remove('hidden');
+    }
+    function updateCalc() {
+      if (!calcEl || !(countInput instanceof HTMLInputElement)) return;
+      const count = Math.max(0, Number(countInput.value) || 0);
+      if (count <= 0) { calcEl.textContent = ''; return; }
+      const pings = Math.ceil(count / VISITS_PER_PING);
+      calcEl.textContent = `${count} ÷ ${VISITS_PER_PING} = ${(count / VISITS_PER_PING).toFixed(4)} → will send ${pings} ping(s).`;
+    }
+    countInput?.addEventListener('input', updateCalc);
+    updateCalc();
+
+    function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
+
+    async function boostVisits() {
+      if (sending) return;
+      const uid = uidInput instanceof HTMLInputElement ? uidInput.value.trim() : '';
+      const server = serverSelect instanceof HTMLSelectElement ? serverSelect.value : 'BD';
+      const target = countInput instanceof HTMLInputElement ? Math.max(1, Math.floor(Number(countInput.value) || 0)) : 0;
+
+      errorEl?.classList.add('hidden');
+      noteEl?.classList.add('hidden');
+      resultEl?.classList.add('hidden');
+
+      if (!uid || !/^\d{5,20}$/.test(uid)) {
+        showError('Enter a valid Free Fire UID first.');
+        return;
+      }
+      if (!target || target < 1) {
+        showError('Enter a target visit count (e.g. 500).');
+        return;
+      }
+
+      const pingsNeeded = Math.ceil(target / VISITS_PER_PING);
+      sending = true;
+      if (btn instanceof HTMLButtonElement) btn.disabled = true;
+      progressEl?.classList.remove('hidden');
+
+      let successPings = 0;
+      let lastAccount = null;
+
+      for (let i = 1; i <= pingsNeeded; i++) {
+        if (progressLabel) progressLabel.textContent = `Pinging ${i}/${pingsNeeded}...`;
+        const pct = Math.round(((i - 1) / pingsNeeded) * 100);
+        if (progressPct) progressPct.textContent = pct + '%';
+        if (progressBar instanceof HTMLElement) progressBar.style.width = pct + '%';
+
+        const url = 'https://sabbir-paid-api2.vercel.app/visit?uid=' + encodeURIComponent(uid) + '&server=' + encodeURIComponent(server);
+        try {
+          const res = await fetch(url, { cache: 'no-store', mode: 'cors' });
+          const data = await res.json();
+          if (data && typeof data.success === 'number' && data.success > 0) successPings++;
+          if (data && (data.nickname || data.level)) lastAccount = data;
+        } catch {
+          // one failed ping doesn't stop the run
+        }
+
+        if (i < pingsNeeded) await sleep(400);
+      }
+
+      if (progressPct) progressPct.textContent = '100%';
+      if (progressBar instanceof HTMLElement) progressBar.style.width = '100%';
+
+      const estimateAdded = successPings * VISITS_PER_PING;
+      const status = successPings > 0 ? '✅ Boost sent' : '⚠️ No pings succeeded';
+      const name = lastAccount?.nickname || 'Unknown';
+      const region = lastAccount?.region || server;
+
+      setText('visit-name', name);
+      setText('visit-uid-display', 'UID: ' + uid);
+      setText('visit-card-name', name);
+      setText('visit-card-uid', 'UID ' + uid + ' • ' + region);
+      setText('visit-target', target);
+      setText('visit-pings', successPings + '/' + pingsNeeded);
+      setText('visit-added', '~' + estimateAdded);
+      setText('visit-status', status);
+      resultEl?.classList.remove('hidden');
+
+      lastCard = { name, uid, region, target, pings: successPings + '/' + pingsNeeded, added: '~' + estimateAdded, status };
+      lastText = name + ' (' + uid + ')\nTarget: ' + target + '\nPings sent: ' + successPings + '/' + pingsNeeded + '\nEst. visits added: ~' + estimateAdded + '\n' + status;
+
+      showNote('Target ' + target + ' → sent ' + pingsNeeded + ' ping(s), ' + successPings + ' succeeded (~' + estimateAdded + ' visits).');
+
+      progressEl?.classList.add('hidden');
+      sending = false;
+      if (btn instanceof HTMLButtonElement) btn.disabled = false;
+    }
+
+    function buildCardCanvas() {
+      if (!lastCard) return null;
+      const canvas = document.createElement('canvas');
+      canvas.width = 900;
+      canvas.height = 520;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+      ctx.fillStyle = '#140d01';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = '#FB923C';
+      ctx.lineWidth = 8;
+      ctx.strokeRect(24, 24, canvas.width - 48, canvas.height - 48);
+      ctx.fillStyle = '#FB923C';
+      ctx.font = '700 22px sans-serif';
+      ctx.fillText('GAMER SABBIR  •  VISIT CARD', 60, 90);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '700 48px sans-serif';
+      ctx.fillText(String(lastCard.name).slice(0, 22), 60, 160);
+      ctx.fillStyle = '#FB923C';
+      ctx.font = '500 22px sans-serif';
+      ctx.fillText('UID ' + lastCard.uid + '   ' + lastCard.region, 60, 200);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '600 26px sans-serif';
+      ctx.fillText('Target  ' + lastCard.target, 60, 290);
+      ctx.fillText('Pings   ' + lastCard.pings, 360, 290);
+      ctx.fillText('Added   ' + lastCard.added, 60, 350);
+      ctx.fillText(String(lastCard.status), 60, 410);
+      return canvas;
+    }
+
+    btn?.addEventListener('click', boostVisits);
+    uidInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') boostVisits(); });
+    document.getElementById('visit-copy')?.addEventListener('click', async () => {
+      if (lastText) await navigator.clipboard.writeText(lastText).catch(() => {});
+    });
+    document.getElementById('visit-download')?.addEventListener('click', () => {
+      const canvas = buildCardCanvas();
+      if (!canvas) return;
+      const link = document.createElement('a');
+      link.download = 'ff-visit-' + (lastCard?.uid || 'player') + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+    document.getElementById('visit-share')?.addEventListener('click', async () => {
+      if (!lastText) return;
+      try {
+        if (navigator.share) await navigator.share({ title: 'Free Fire Visit Card', text: lastText });
+        else await navigator.clipboard.writeText(lastText);
+      } catch {}
+    });
+  });
+</script>

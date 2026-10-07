@@ -1,0 +1,12 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import homeData from '../../data/home.json';
+import Extra from '../../components/ff-extra-card.astro';
+const tool = { id: "eat", badge: "EAT", badgeBn: "EAT", title: "EAT to Token", titleBn: "EAT থেকে টোকেন", text: "Paste an EAT code or a full link.", textBn: "EAT কোড বা পুরো লিংক দাও।", button: "Convert", buttonBn: "বদলাও", tone: "text-orange-300 bg-orange-400/10 border-orange-400/20", fields: [{ name: "eat", label: "EAT or link", labelBn: "EAT বা লিংক", placeholder: "Paste EAT or link", tag: "textarea" }] };
+---
+<Layout title="EAT to Token | GAMER SABBIR" personName={homeData.name} description="Turn an EAT code or link into an access token." siteUrl={homeData.siteUrl} lang="en" socials={homeData.socials}>
+  <main class="section-container min-h-[80vh]"><div class="container mx-auto max-w-3xl">
+    <a href="/#tools" class="text-sm text-accent mb-6 inline-block">← Home</a>
+    <Extra tool={tool} />
+  </div></main>
+</Layout>

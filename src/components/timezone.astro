@@ -1,0 +1,78 @@
+---
+const zones = [
+  { id: 'Asia/Dhaka', label: 'BD' },
+  { id: 'Asia/Kolkata', label: 'IND' },
+  { id: 'Asia/Singapore', label: 'SG' },
+  { id: 'Asia/Bangkok', label: 'TH' },
+  { id: 'America/Sao_Paulo', label: 'BR' },
+  { id: 'America/New_York', label: 'US-E' },
+];
+---
+
+<div class="mt-8 rounded-2xl border border-accent/15 bg-accent/5 p-6 md:p-8">
+  <p class="text-[10px] uppercase tracking-widest font-bold text-cyan-400 mb-1">Squad</p>
+  <h3 class="text-xl font-heading font-bold text-maintext mb-1" data-i18n="tz.title">Match Time Converter</h3>
+  <p class="text-subtext text-sm mb-5" data-i18n="tz.desc">Set a BD match time. See the same moment in other servers.</p>
+
+  <div class="flex flex-col sm:flex-row gap-3 mb-5">
+    <label class="text-xs text-subtext flex-1">
+      <span data-en="BD date" data-bn="বিডি তারিখ">BD date</span>
+      <input id="tz-date" type="date" class="mt-1 w-full px-3 py-2 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm" />
+    </label>
+    <label class="text-xs text-subtext flex-1">
+      <span data-en="BD time" data-bn="বিডি সময়">BD time</span>
+      <input id="tz-time" type="time" class="mt-1 w-full px-3 py-2 rounded-lg bg-background/60 border border-white/10 text-maintext text-sm" />
+    </label>
+  </div>
+  <div id="tz-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+</div>
+
+<script define:vars={{ zones }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    const dateEl = document.getElementById('tz-date');
+    const timeEl = document.getElementById('tz-time');
+    const grid = document.getElementById('tz-grid');
+
+    const parts = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Dhaka',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23',
+    }).formatToParts(new Date());
+    const grab = (type) => parts.find((p) => p.type === type)?.value || '';
+    if (dateEl instanceof HTMLInputElement) {
+      dateEl.value = `${grab('year')}-${grab('month')}-${grab('day')}`;
+    }
+    if (timeEl instanceof HTMLInputElement) {
+      timeEl.value = `${grab('hour')}:${grab('minute')}`;
+    }
+
+    function render() {
+      if (!(dateEl instanceof HTMLInputElement) || !(timeEl instanceof HTMLInputElement) || !grid) return;
+      const iso = `${dateEl.value}T${timeEl.value}:00`;
+      const bd = new Date(iso + '+06:00');
+      if (Number.isNaN(bd.getTime())) return;
+      grid.innerHTML = '';
+      zones.forEach((z) => {
+        const fmt = new Intl.DateTimeFormat('en-GB', {
+          timeZone: z.id,
+          hour: '2-digit',
+          minute: '2-digit',
+          weekday: 'short',
+          day: '2-digit',
+          month: 'short',
+        }).format(bd);
+        const card = document.createElement('div');
+        card.className = 'rounded-xl border border-white/10 bg-background/40 p-3';
+        card.innerHTML = `<p class="text-[11px] text-subtext">${z.label}</p><p class="text-maintext text-sm font-semibold">${fmt}</p>`;
+        grid.appendChild(card);
+      });
+    }
+    dateEl?.addEventListener('change', render);
+    timeEl?.addEventListener('input', render);
+    render();
+  });
+</script>

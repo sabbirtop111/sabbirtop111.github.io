@@ -1,0 +1,37 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import homeData from '../../data/home.json';
+---
+<Layout title="JSON Formatter | GAMER SABBIR" personName={homeData.name} description="Pretty-print JSON in the browser." siteUrl={homeData.siteUrl} lang="en" socials={homeData.socials}>
+  <main class="section-container min-h-[80vh]"><div class="container mx-auto max-w-2xl">
+    <a href="/#tools" class="text-sm text-accent mb-6 inline-block">← Home</a>
+    <h1 class="text-3xl font-heading font-bold text-maintext mb-2">JSON Formatter</h1>
+    <p class="text-subtext text-sm mb-5" data-en="Paste API JSON. Format or minify. Stays on this phone." data-bn="API JSON পেস্ট করো। সুন্দর করো বা ছোট করো। ফোনেই থাকে।">Paste API JSON. Format or minify. Stays on this phone.</p>
+    <textarea id="json-in" rows="10" class="w-full mb-3 px-3 py-2 rounded-xl bg-background/60 border border-white/10 text-maintext text-sm font-mono" placeholder='{"UID":123}'></textarea>
+    <div class="flex gap-2 mb-3">
+      <button id="json-pretty" class="px-3 py-2 rounded-lg bg-accent/20 border border-accent/40 text-sm">Format</button>
+      <button id="json-mini" class="px-3 py-2 rounded-lg border border-white/10 text-sm">Minify</button>
+    </div>
+    <p id="json-err" class="text-red-400 text-xs mb-2 hidden"></p>
+    <textarea id="json-out" rows="10" readonly class="w-full px-3 py-2 rounded-xl bg-background/60 border border-white/10 text-maintext text-sm font-mono"></textarea>
+  </div></main>
+</Layout>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const inn = document.getElementById('json-in');
+    const out = document.getElementById('json-out');
+    const err = document.getElementById('json-err');
+    function run(space) {
+      if (!(inn instanceof HTMLTextAreaElement) || !(out instanceof HTMLTextAreaElement)) return;
+      try {
+        const data = JSON.parse(inn.value);
+        out.value = JSON.stringify(data, null, space);
+        err?.classList.add('hidden');
+      } catch (e) {
+        if (err) { err.textContent = 'Invalid JSON'; err.classList.remove('hidden'); }
+      }
+    }
+    document.getElementById('json-pretty')?.addEventListener('click', () => run(2));
+    document.getElementById('json-mini')?.addEventListener('click', () => run(0));
+  });
+</script>

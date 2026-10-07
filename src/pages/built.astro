@@ -1,0 +1,41 @@
+---
+import Layout from '../layouts/Layout.astro';
+import homeData from '../data/home.json';
+---
+
+<Layout
+  title="How I built this | GAMER SABBIR"
+  personName={homeData.name}
+  description="How this portfolio was built with Astro, Tailwind, and live Free Fire tools."
+  siteUrl={homeData.siteUrl}
+  lang="en"
+  socials={homeData.socials}
+>
+  <section class="section-container max-w-3xl mx-auto">
+    <p class="font-mono text-accent text-xs tracking-[0.25em] mb-3">CHANGELOG</p>
+    <h1 class="font-heading font-bold text-4xl text-maintext mb-4">How I built this</h1>
+    <p class="text-subtext font-body leading-relaxed mb-8">
+      This site is a solo build: a fast static portfolio on GitHub Pages, with live tools visitors can actually use.
+    </p>
+
+    <div class="space-y-6 text-subtext font-body leading-relaxed">
+      <div class="rounded-2xl border border-white/10 bg-accent/5 p-5">
+        <h2 class="text-maintext font-heading font-bold text-lg mb-2">Stack</h2>
+        <p>Astro + Tailwind CSS + TypeScript. Hosted on GitHub Pages. No heavy React app — pages ship as static HTML.</p>
+      </div>
+      <div class="rounded-2xl border border-white/10 bg-accent/5 p-5">
+        <h2 class="text-maintext font-heading font-bold text-lg mb-2">Live tools</h2>
+        <p>Free Fire Info Checker and Like Sender talk to my own APIs. Anyone can type a UID. Likes are limited to 1 per UID per day by the API.</p>
+      </div>
+      <div class="rounded-2xl border border-white/10 bg-accent/5 p-5">
+        <h2 class="text-maintext font-heading font-bold text-lg mb-2">Why this way</h2>
+        <p>I want the portfolio to prove I ship: APIs, bots, and a site people can click around — not just screenshots.</p>
+      </div>
+    </div>
+
+    <div class="mt-10 flex flex-wrap gap-3">
+      <a href="/" class="px-5 py-2 rounded-full bg-accent/20 border border-accent/40 text-maintext text-sm font-semibold">Back home</a>
+      <a href="/devtools" class="px-5 py-2 rounded-full border border-white/10 text-subtext text-sm">Dev tools</a>
+    </div>
+  </section>
+</Layout>

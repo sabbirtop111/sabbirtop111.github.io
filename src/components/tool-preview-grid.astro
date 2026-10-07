@@ -1,0 +1,35 @@
+---
+const cards = [
+  { href: "/tools/ff-ban", badge: "Ban Check", badgeBn: "ব্যান চেক", title: "Ban Check", titleBn: "ব্যান চেক", text: "See if a UID is banned.", textBn: "UID ব্যান আছে কি না দেখো।", tone: "text-rose-300 bg-rose-400/10 border-rose-400/20" },
+  { href: "/tools/ff-visit", badge: "Visit", badgeBn: "ভিজিট", title: "Profile Visit", titleBn: "প্রোফাইল ভিজিট", text: "Send visits to a UID.", textBn: "একটা UID-তে ভিজিট পাঠাও।", tone: "text-sky-300 bg-sky-400/10 border-sky-400/20" },
+  { href: "/tools/ff-request", badge: "Request", badgeBn: "রিকোয়েস্ট", title: "Friend Request", titleBn: "ফ্রেন্ড রিকোয়েস্ট", text: "Send a friend request by UID.", textBn: "UID দিয়ে ফ্রেন্ড রিকোয়েস্ট।", tone: "text-violet-300 bg-violet-400/10 border-violet-400/20" },
+  { href: "/tools/ff-bio", badge: "Bio", badgeBn: "বায়ো", title: "Update Bio", titleBn: "বায়ো আপডেট", text: "Change your in-game bio.", textBn: "গেমে বায়ো বদলাও।", tone: "text-amber-300 bg-amber-400/10 border-amber-400/20" },
+  { href: "/tools/ff-token", badge: "Token", badgeBn: "টোকেন", title: "UID to Token", titleBn: "UID থেকে টোকেন", text: "Make a token from UID and password.", textBn: "UID আর পাসওয়ার্ড থেকে টোকেন।", tone: "text-emerald-300 bg-emerald-400/10 border-emerald-400/20" },
+  { href: "/tools/ff-access", badge: "Token", badgeBn: "টোকেন", title: "Access to Token", titleBn: "অ্যাক্সেস থেকে টোকেন", text: "Turn an access token into a game token.", textBn: "অ্যাক্সেস টোকেন থেকে গেম টোকেন।", tone: "text-emerald-300 bg-emerald-400/10 border-emerald-400/20" },
+  { href: "/tools/ff-eat", badge: "EAT", badgeBn: "EAT", title: "EAT to Token", titleBn: "EAT থেকে টোকেন", text: "Paste an EAT code or link.", textBn: "EAT কোড বা লিংক দাও।", tone: "text-orange-300 bg-orange-400/10 border-orange-400/20" },
+  { href: "/tools/ff-bind", badge: "Bind", badgeBn: "বাইন্ড", title: "Bind Info", titleBn: "বাইন্ড ইনফো", text: "Recovery email and countdown.", textBn: "রিকভারি ইমেইল আর সময়।", tone: "text-cyan-300 bg-cyan-400/10 border-cyan-400/20" },
+  { href: "/tools/ff-platforms", badge: "Platforms", badgeBn: "প্ল্যাটফর্ম", title: "Bound Platforms", titleBn: "বাউন্ড প্ল্যাটফর্ম", text: "See linked login platforms.", textBn: "যে লগইন বাঁধা আছে।", tone: "text-cyan-300 bg-cyan-400/10 border-cyan-400/20" },
+  { href: "/tools/ff-revoke", badge: "Logout", badgeBn: "লগআউট", title: "Revoke Token", titleBn: "টোকেন বাতিল", text: "Log out an access token.", textBn: "অ্যাক্সেস টোকেন লগআউট।", tone: "text-rose-300 bg-rose-400/10 border-rose-400/20" },
+];
+---
+
+<section class="mt-10">
+  <div class="mb-4">
+    <h3 class="text-xl md:text-2xl font-heading font-bold text-maintext" data-en="More tools" data-bn="আরও টুল">More tools</h3>
+    <p class="text-subtext text-xs mt-1" data-en="Same card style, half and half. Tap to open the full card on its own page." data-bn="Like/Info-এর মতো কার্ড, ৫০/৫০। ট্যাপ করলে নতুন পেজে ফুল কার্ড।">
+      Same card style, half and half. Tap to open the full card on its own page.
+    </p>
+  </div>
+  <div class="grid grid-cols-2 gap-3 md:gap-4">
+    {cards.map((card) => (
+      <a href={card.href} class="rounded-2xl border border-accent/15 bg-accent/5 p-4 md:p-5 hover:border-accent/40 transition-colors block min-h-[168px]">
+        <span class={`text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full border ${card.tone}`}>
+          <span data-en={card.badge} data-bn={card.badgeBn}>{card.badge}</span>
+        </span>
+        <h4 class="font-heading font-bold text-maintext text-sm md:text-base mt-3" data-en={card.title} data-bn={card.titleBn}>{card.title}</h4>
+        <p class="text-[11px] md:text-xs text-subtext mt-1" data-en={card.text} data-bn={card.textBn}>{card.text}</p>
+        <span class="inline-block mt-4 text-[11px] px-3 py-1.5 rounded-lg bg-accent/20 border border-accent/40 text-maintext" data-en="Open" data-bn="খোলো">Open</span>
+      </a>
+    ))}
+  </div>
+</section>

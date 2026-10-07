@@ -1,0 +1,8 @@
+---
+import Layout from '../layouts/Layout.astro';
+import homeData from '../data/home.json';
+import Now from '../components/now.astro';
+---
+<Layout title="Now | GAMER SABBIR" personName={homeData.name} description="What Gamer Sabbir is working on now." siteUrl={homeData.siteUrl} lang="en" socials={homeData.socials}>
+  <Now />
+</Layout>
