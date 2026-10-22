@@ -1,0 +1,12 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import homeData from '../../data/home.json';
+import Extra from '../../components/ff-extra-card.astro';
+const tool = { id: "bind", badge: "Bind", badgeBn: "বাইন্ড", title: "Bind Info", titleBn: "বাইন্ড ইনফো", text: "Paste an access token to see bind details.", textBn: "অ্যাক্সেস টোকেন দিয়ে বাইন্ড দেখো।", button: "Check", buttonBn: "চেক করো", tone: "text-cyan-300 bg-cyan-400/10 border-cyan-400/20", fields: [{ name: "access_token", label: "Access token", labelBn: "অ্যাক্সেস টোকেন", placeholder: "Paste token", tag: "textarea" }] };
+---
+<Layout title="Bind Info | GAMER SABBIR" personName={homeData.name} description="See recovery email and bind countdown." siteUrl={homeData.siteUrl} lang="en" socials={homeData.socials}>
+  <main class="section-container min-h-[80vh]"><div class="container mx-auto max-w-3xl">
+    <a href="/#tools" class="text-sm text-accent mb-6 inline-block">← Home</a>
+    <Extra tool={tool} />
+  </div></main>
+</Layout>

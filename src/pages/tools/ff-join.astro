@@ -1,0 +1,12 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import homeData from '../../data/home.json';
+import Extra from '../../components/ff-extra-card.astro';
+const tool = { id: "join", badge: "Guild", badgeBn: "গিল্ড", title: "Guild Join", titleBn: "গিল্ড জয়েন", text: "Pick one login. Only that box shows.", textBn: "একটা লগইন বাছো। শুধু সেটা দেখাবে।", button: "Join", buttonBn: "জয়েন", tone: "text-lime-300 bg-lime-400/10 border-lime-400/20", fields: [{ name: "clan_id", label: "Guild ID", labelBn: "গিল্ড আইডি", placeholder: "Clan id" }, { name: "method", label: "Login", labelBn: "লগইন", placeholder: "", tag: "select", options: [{ value: "uid", label: "UID + Password" }, { value: "access", label: "Access token" }, { value: "jwt", label: "JWT" }] }, { name: "uid", label: "UID", labelBn: "UID", placeholder: "UID", optional: true, login: "uid" }, { name: "password", label: "Password", labelBn: "পাসওয়ার্ড", placeholder: "Password", type: "password", optional: true, login: "uid" }, { name: "access_token", label: "Access token", labelBn: "অ্যাক্সেস", placeholder: "Access token", optional: true, login: "access" }, { name: "jwt", label: "JWT", labelBn: "JWT", placeholder: "JWT", optional: true, login: "jwt" }] };
+---
+<Layout title="Guild Join | GAMER SABBIR" personName={homeData.name} description="Join a Free Fire guild." siteUrl={homeData.siteUrl} lang="en" socials={homeData.socials}>
+  <main class="section-container min-h-[80vh]"><div class="container mx-auto max-w-3xl">
+    <a href="/#tools" class="text-sm text-accent mb-6 inline-block">← Home</a>
+    <Extra tool={tool} />
+  </div></main>
+</Layout>

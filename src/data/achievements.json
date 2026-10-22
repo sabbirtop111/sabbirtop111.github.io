@@ -1,0 +1,26 @@
+[
+  {
+    "emoji": "🤖",
+    "value": "40+",
+    "label": "Bot Commands Built",
+    "labelBn": "বট কমান্ড বানিয়েছি"
+  },
+  {
+    "emoji": "🔥",
+    "value": "Live",
+    "label": "Free Fire API Shipped",
+    "labelBn": "Free Fire API চালু"
+  },
+  {
+    "emoji": "💻",
+    "value": "25+",
+    "label": "GitHub Repos",
+    "labelBn": "GitHub রিপো"
+  },
+  {
+    "emoji": "🎯",
+    "value": "100%",
+    "label": "Self-Taught",
+    "labelBn": "নিজে শিখেছি"
+  }
+]

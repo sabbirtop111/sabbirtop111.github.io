@@ -1,0 +1,11 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import homeData from '../../data/home.json';
+import FreeFireVisit from '../../components/freefire-visit.astro';
+---
+<Layout title="Free Fire Visit Booster | GAMER SABBIR" personName={homeData.name} description="Boost Free Fire profile visits by UID." siteUrl={homeData.siteUrl} lang="en" socials={homeData.socials}>
+  <main class="section-container min-h-[80vh]"><div class="container mx-auto max-w-3xl">
+    <a href="/#tools" class="text-sm text-accent mb-6 inline-block">← Home</a>
+    <FreeFireVisit />
+  </div></main>
+</Layout>

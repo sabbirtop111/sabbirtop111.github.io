@@ -1,0 +1,99 @@
+---
+import Layout from '../layouts/Layout.astro';
+import homeData from '../data/home.json';
+---
+
+<Layout
+  title="Dev tools | GAMER SABBIR"
+  personName={homeData.name}
+  description="Tiny browser tools: JSON format, UUID, password, text case, timestamp."
+  siteUrl={homeData.siteUrl}
+  lang="en"
+  socials={homeData.socials}
+>
+  <section class="section-container max-w-3xl mx-auto">
+    <p class="font-mono text-accent text-xs tracking-[0.25em] mb-3">UTILITIES</p>
+    <h1 class="font-heading font-bold text-4xl text-maintext mb-2">Dev tools</h1>
+    <p class="text-subtext text-sm mb-8">Runs in your browser. Nothing is uploaded.</p>
+
+    <div class="space-y-6">
+      <div class="rounded-2xl border border-white/10 bg-accent/5 p-5">
+        <h2 class="text-maintext font-semibold mb-3">JSON formatter</h2>
+        <textarea id="json-in" rows="6" class="w-full px-3 py-2 rounded-lg bg-background/60 border border-white/10 text-sm text-maintext mb-3" placeholder='{"hello":"world"}'></textarea>
+        <button id="json-btn" type="button" class="px-4 py-2 rounded-lg bg-accent/20 border border-accent/40 text-sm">Format</button>
+        <pre id="json-out" class="mt-3 text-xs text-subtext whitespace-pre-wrap break-all"></pre>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-accent/5 p-5">
+        <h2 class="text-maintext font-semibold mb-3">Generators</h2>
+        <div class="flex flex-wrap gap-2 mb-3">
+          <button id="uuid-btn" type="button" class="px-4 py-2 rounded-lg border border-white/10 text-sm">New UUID</button>
+          <button id="pass-btn" type="button" class="px-4 py-2 rounded-lg border border-white/10 text-sm">Password</button>
+        </div>
+        <input id="gen-out" readonly class="w-full px-3 py-2 rounded-lg bg-background/60 border border-white/10 text-sm text-maintext" />
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-accent/5 p-5">
+        <h2 class="text-maintext font-semibold mb-3">Text case + time</h2>
+        <input id="text-in" class="w-full px-3 py-2 rounded-lg bg-background/60 border border-white/10 text-sm text-maintext mb-3" placeholder="Type something" />
+        <div class="flex flex-wrap gap-2 mb-3">
+          <button data-case="upper" type="button" class="case-btn px-3 py-1.5 rounded-lg border border-white/10 text-xs">UPPER</button>
+          <button data-case="lower" type="button" class="case-btn px-3 py-1.5 rounded-lg border border-white/10 text-xs">lower</button>
+          <button data-case="title" type="button" class="case-btn px-3 py-1.5 rounded-lg border border-white/10 text-xs">Title</button>
+        </div>
+        <div class="flex gap-2">
+          <input id="unix-in" class="flex-1 px-3 py-2 rounded-lg bg-background/60 border border-white/10 text-sm" placeholder="Unix seconds" />
+          <button id="unix-btn" type="button" class="px-4 py-2 rounded-lg border border-white/10 text-sm">To date</button>
+        </div>
+        <p id="unix-out" class="text-xs text-subtext mt-2"></p>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  document.getElementById('json-btn')?.addEventListener('click', () => {
+    const input = (document.getElementById('json-in') as HTMLTextAreaElement | null)?.value || '';
+    const out = document.getElementById('json-out');
+    try {
+      if (out) out.textContent = JSON.stringify(JSON.parse(input), null, 2);
+    } catch {
+      if (out) out.textContent = 'Invalid JSON';
+    }
+  });
+
+  document.getElementById('uuid-btn')?.addEventListener('click', () => {
+    const el = document.getElementById('gen-out');
+    if (el instanceof HTMLInputElement) el.value = crypto.randomUUID();
+  });
+
+  document.getElementById('pass-btn')?.addEventListener('click', () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%';
+    let pass = '';
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    bytes.forEach((b) => { pass += chars[b % chars.length]; });
+    const el = document.getElementById('gen-out');
+    if (el instanceof HTMLInputElement) el.value = pass;
+  });
+
+  document.querySelectorAll('.case-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const input = document.getElementById('text-in');
+      if (!(input instanceof HTMLInputElement)) return;
+      const mode = btn.getAttribute('data-case');
+      if (mode === 'upper') input.value = input.value.toUpperCase();
+      if (mode === 'lower') input.value = input.value.toLowerCase();
+      if (mode === 'title') input.value = input.value.replace(/\w\S*/g, (w) => w[0].toUpperCase() + w.slice(1).toLowerCase());
+    });
+  });
+
+  document.getElementById('unix-btn')?.addEventListener('click', () => {
+    const raw = (document.getElementById('unix-in') as HTMLInputElement | null)?.value || '';
+    const n = Number(raw);
+    const out = document.getElementById('unix-out');
+    if (!out) return;
+    if (!Number.isFinite(n)) { out.textContent = 'Not a number'; return; }
+    out.textContent = new Date(n * 1000).toString();
+  });
+</script>

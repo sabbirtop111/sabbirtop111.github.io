@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>You're offline | GAMER SABBIR</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #0F0D29;
+      color: #FFFFFF;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+    }
+    .card { max-width: 380px; }
+    .emoji { font-size: 56px; margin-bottom: 16px; }
+    h1 { font-size: 22px; margin: 0 0 12px; }
+    p { color: #b2bed1; font-size: 14px; line-height: 1.6; margin: 0 0 24px; }
+    button {
+      background: rgba(167, 139, 250, 0.15);
+      border: 1px solid rgba(167, 139, 250, 0.5);
+      color: #FFFFFF;
+      padding: 10px 24px;
+      border-radius: 999px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    button:hover { background: rgba(167, 139, 250, 0.25); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="emoji">📡</div>
+    <h1>You're offline</h1>
+    <p>Looks like there's no internet connection right now. Once you're back online, this page will refresh automatically.</p>
+    <button onclick="window.location.href='/'">Try Again</button>
+  </div>
+
+  <script>
+    window.addEventListener('online', () => {
+      window.location.href = '/';
+    });
+  </script>
+</body>
+</html>

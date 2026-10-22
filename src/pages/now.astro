@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import homeData from '../data/home.json';
+---
+<Layout title="Now | GAMER SABBIR" personName={homeData.name} description="Now page removed." siteUrl={homeData.siteUrl} lang="en" socials={homeData.socials}>
+  <main class="section-container min-h-[60vh]">
+    <a href="/" class="text-sm text-accent">← Home</a>
+    <h1 class="text-3xl font-heading font-bold text-maintext mt-4">This page is off.</h1>
+  </main>
+</Layout>

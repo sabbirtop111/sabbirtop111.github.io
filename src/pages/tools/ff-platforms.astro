@@ -1,0 +1,12 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import homeData from '../../data/home.json';
+import Extra from '../../components/ff-extra-card.astro';
+const tool = { id: "platforms", badge: "Platforms", badgeBn: "প্ল্যাটফর্ম", title: "Bound Platforms", titleBn: "বাউন্ড প্ল্যাটফর্ম", text: "Paste an access token to see linked logins.", textBn: "অ্যাক্সেস টোকেন দিয়ে বাঁধা লগইন দেখো।", button: "Check", buttonBn: "চেক করো", tone: "text-cyan-300 bg-cyan-400/10 border-cyan-400/20", fields: [{ name: "access_token", label: "Access token", labelBn: "অ্যাক্সেস টোকেন", placeholder: "Paste token", tag: "textarea" }] };
+---
+<Layout title="Bound Platforms | GAMER SABBIR" personName={homeData.name} description="See linked login platforms." siteUrl={homeData.siteUrl} lang="en" socials={homeData.socials}>
+  <main class="section-container min-h-[80vh]"><div class="container mx-auto max-w-3xl">
+    <a href="/#tools" class="text-sm text-accent mb-6 inline-block">← Home</a>
+    <Extra tool={tool} />
+  </div></main>
+</Layout>

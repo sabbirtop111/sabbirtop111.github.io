@@ -1,0 +1,258 @@
+---
+const API = "https://sabbir-paid-api2.vercel.app";
+
+const regions = ["BD", "IND", "SG", "TH", "VN", "ID", "PK", "ME", "BR", "US", "SAC", "NA", "RU", "TW", "CIS", "EUROPE"];
+
+const tools = [
+  {
+    id: "ban",
+    title: "Ban Check",
+    titleBn: "ব্যান চেক",
+    endpoint: "/ban-check",
+    hint: "uid",
+    blurb: "Garena anti-hack status for a UID.",
+    blurbBn: "একটা UID ব্যান আছে কি না দেখে।",
+    tone: "rose",
+  },
+  {
+    id: "visit",
+    title: "Visit",
+    titleBn: "ভিজিট",
+    endpoint: "/visit",
+    hint: "uid + server",
+    blurb: "Profile visit count for a UID.",
+    blurbBn: "একটা UID-তে ভিজিট পাঠায়।",
+    tone: "sky",
+  },
+  {
+    id: "request",
+    title: "Friend Request",
+    titleBn: "ফ্রেন্ড রিকোয়েস্ট",
+    endpoint: "/send_request-dev",
+    hint: "uid + server",
+    blurb: "Send friend requests to a UID.",
+    blurbBn: "একটা UID-তে ফ্রেন্ড রিকোয়েস্ট।",
+    tone: "violet",
+  },
+  {
+    id: "bio",
+    title: "Update Bio",
+    titleBn: "বায়ো আপডেট",
+    endpoint: "/updatebio",
+    hint: "token + bio",
+    blurb: "Change social bio with your JWT.",
+    blurbBn: "নিজের JWT দিয়ে বায়ো বদলায়।",
+    tone: "amber",
+  },
+  {
+    id: "token",
+    title: "UID to JWT",
+    titleBn: "UID থেকে JWT",
+    endpoint: "/token",
+    hint: "uid + password",
+    blurb: "Guest login token from UID and password.",
+    blurbBn: "UID আর পাসওয়ার্ড থেকে JWT।",
+    tone: "emerald",
+  },
+  {
+    id: "access",
+    title: "Access to JWT",
+    titleBn: "অ্যাক্সেস থেকে JWT",
+    endpoint: "/access-jwt",
+    hint: "access token",
+    blurb: "Turn an access token into a game JWT.",
+    blurbBn: "অ্যাক্সেস টোকেন থেকে গেম JWT।",
+    tone: "emerald",
+  },
+  {
+    id: "eat",
+    title: "EAT to Token",
+    titleBn: "EAT থেকে টোকেন",
+    endpoint: "/eat-to-token",
+    hint: "eat or url",
+    blurb: "EAT token or callback URL to access token.",
+    blurbBn: "EAT বা URL থেকে অ্যাক্সেস টোকেন।",
+    tone: "orange",
+  },
+  {
+    id: "bind",
+    title: "Bind Info",
+    titleBn: "বাইন্ড ইনফো",
+    endpoint: "/bind-info",
+    hint: "access token",
+    blurb: "Recovery email and bind countdown.",
+    blurbBn: "রিকভারি ইমেইল আর কাউন্টডাউন।",
+    tone: "cyan",
+  },
+  {
+    id: "platforms",
+    title: "Bound Platforms",
+    titleBn: "বাউন্ড প্ল্যাটফর্ম",
+    endpoint: "/bound-platforms",
+    hint: "access token",
+    blurb: "Linked and available login platforms.",
+    blurbBn: "যে প্ল্যাটফর্ম বাঁধা আছে।",
+    tone: "cyan",
+  },
+  {
+    id: "revoke",
+    title: "Revoke Token",
+    titleBn: "টোকেন রিভোক",
+    endpoint: "/revoke-token",
+    hint: "access token",
+    blurb: "Log out and revoke an access token.",
+    blurbBn: "অ্যাক্সেস টোকেন লগআউট করে।",
+    tone: "rose",
+  },
+];
+---
+
+<section class="mt-12" id="more-tools">
+  <div class="mb-5 flex items-end justify-between gap-3">
+    <div>
+      <p class="text-[10px] uppercase tracking-widest font-bold text-accent mb-1">API tools</p>
+      <h3 class="text-xl md:text-2xl font-heading font-bold text-maintext" data-en="More tools" data-bn="আরও টুল">More tools</h3>
+      <p class="text-subtext text-xs mt-1" data-en="Four across on desktop, half and half on phone. Tap a card to open it." data-bn="ডেস্কটপে ৪টা, ফোনে ৫০/৫০। ট্যাপ করলে ফুল কার্ড খুলবে।">
+        Four across on desktop, half and half on phone. Tap a card to open it.
+      </p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+    {tools.map((tool) => (
+      <button
+        type="button"
+        class="api-mini group text-left rounded-2xl border border-white/10 bg-white/[0.03] p-3 md:p-4 hover:border-accent/40 hover:bg-accent/5 transition-colors min-h-[132px]"
+        data-open={tool.id}
+      >
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <span class="text-[10px] font-mono text-accent/80 truncate">{tool.endpoint}</span>
+          <span class="text-[10px] text-accent shrink-0" data-en="Open" data-bn="খোলো">Open</span>
+        </div>
+        <h4 class="font-heading font-bold text-maintext text-sm md:text-base leading-tight" data-en={tool.title} data-bn={tool.titleBn}>{tool.title}</h4>
+        <p class="text-[11px] text-subtext mt-1 line-clamp-2" data-en={tool.blurb} data-bn={tool.blurbBn}>{tool.blurb}</p>
+        <p class="text-[10px] text-accent mt-3" data-en="Tap to open" data-bn="ট্যাপ করে খোলো">Tap to open</p>
+      </button>
+    ))}
+  </div>
+</section>
+
+<div id="api-modal" class="fixed inset-0 z-[80] hidden items-end md:items-center justify-center p-0 md:p-6">
+  <button type="button" id="api-modal-backdrop" class="absolute inset-0 bg-black/70" aria-label="Close"></button>
+  <div class="relative w-full md:max-w-xl max-h-[92vh] overflow-y-auto rounded-t-3xl md:rounded-3xl border border-accent/20 bg-[#12141c] p-5 md:p-6 shadow-2xl">
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <div>
+        <p id="api-modal-endpoint" class="text-[11px] font-mono text-accent"></p>
+        <h3 id="api-modal-title" class="text-xl font-heading font-bold text-maintext"></h3>
+      </div>
+      <button type="button" id="api-modal-close" class="px-3 py-1.5 rounded-full border border-white/10 text-xs text-subtext">Close</button>
+    </div>
+    <form id="api-modal-form" class="space-y-3"></form>
+    <pre id="api-modal-out" class="mt-4 hidden text-[11px] leading-relaxed font-mono whitespace-pre-wrap break-all rounded-xl border border-white/10 bg-black/30 p-3 text-maintext max-h-64 overflow-auto"></pre>
+  </div>
+</div>
+
+<script define:vars={{ API, regions, tools }}>
+  const modal = document.getElementById("api-modal");
+  const form = document.getElementById("api-modal-form");
+  const title = document.getElementById("api-modal-title");
+  const endpointEl = document.getElementById("api-modal-endpoint");
+  const out = document.getElementById("api-modal-out");
+  const byId = Object.fromEntries(tools.map((t) => [t.id, t]));
+
+  function field(name, label, opts = {}) {
+    const wrap = document.createElement("label");
+    wrap.className = "block text-xs text-subtext";
+    wrap.textContent = label;
+    const input = document.createElement(opts.tag || "input");
+    input.name = name;
+    input.required = true;
+    input.className = "mt-1 w-full px-3 py-2.5 rounded-lg bg-black/30 border border-white/10 text-maintext text-sm";
+    if (opts.tag === "textarea") input.rows = 3;
+    if (opts.tag === "select") {
+      regions.forEach((r) => {
+        const o = document.createElement("option");
+        o.value = r;
+        o.textContent = r;
+        input.appendChild(o);
+      });
+    } else {
+      input.type = opts.type || "text";
+      input.placeholder = opts.placeholder || "";
+      input.autocomplete = "off";
+    }
+    wrap.appendChild(input);
+    return wrap;
+  }
+
+  function build(tool) {
+    form.innerHTML = "";
+    out.classList.add("hidden");
+    out.textContent = "";
+    title.textContent = tool.title;
+    endpointEl.textContent = API + tool.endpoint;
+    const add = (...nodes) => nodes.forEach((n) => form.appendChild(n));
+    if (tool.id === "ban") add(field("uid", "UID", { placeholder: "123456789" }));
+    if (tool.id === "visit" || tool.id === "request") {
+      add(field("uid", "UID", { placeholder: "123456789" }), field("server", "Server", { tag: "select" }));
+    }
+    if (tool.id === "bio") {
+      add(field("token", "JWT token", { placeholder: "eyJ..." }), field("bio", "Bio", { tag: "textarea", placeholder: "New bio" }), field("region", "Region", { tag: "select" }));
+    }
+    if (tool.id === "token") {
+      add(field("uid", "UID", { placeholder: "123456789" }), field("password", "Password", { type: "password", placeholder: "password" }));
+    }
+    if (tool.id === "access" || tool.id === "bind" || tool.id === "platforms" || tool.id === "revoke") {
+      add(field("access_token", "Access token", { tag: "textarea", placeholder: "access token" }));
+    }
+    if (tool.id === "eat") add(field("eat", "EAT token or URL", { tag: "textarea", placeholder: "eat token or full URL" }));
+    const btn = document.createElement("button");
+    btn.type = "submit";
+    btn.className = "w-full px-4 py-2.5 rounded-lg bg-accent/20 border border-accent/40 text-maintext text-sm font-semibold";
+    btn.textContent = "Run";
+    form.appendChild(btn);
+  }
+
+  function openTool(id) {
+    const tool = byId[id];
+    if (!tool || !modal) return;
+    build(tool);
+    modal.dataset.tool = id;
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+  }
+
+  function closeTool() {
+    modal?.classList.add("hidden");
+    modal?.classList.remove("flex");
+  }
+
+  document.querySelectorAll("[data-open]").forEach((btn) => {
+    btn.addEventListener("click", () => openTool(btn.getAttribute("data-open")));
+  });
+  document.getElementById("api-modal-close")?.addEventListener("click", closeTool);
+  document.getElementById("api-modal-backdrop")?.addEventListener("click", closeTool);
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const tool = byId[modal?.dataset.tool || ""];
+    if (!tool) return;
+    const data = new FormData(form);
+    const params = new URLSearchParams();
+    for (const [key, value] of data.entries()) params.set(key, String(value).trim());
+    const url = API + tool.endpoint + "?" + params.toString();
+    out.classList.remove("hidden");
+    out.textContent = "Loading...";
+    try {
+      const res = await fetch(url, { cache: "no-store", mode: "cors" });
+      const text = await res.text();
+      try {
+        out.textContent = JSON.stringify(JSON.parse(text), null, 2);
+      } catch {
+        out.textContent = text.slice(0, 2000);
+      }
+    } catch (err) {
+      out.textContent = "Request failed. API may be down or blocked by CORS.";
+    }
+  });
+</script>

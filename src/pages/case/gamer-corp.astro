@@ -1,0 +1,27 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import homeData from '../../data/home.json';
+---
+<Layout title="GAMER-CORP Case Study | GAMER SABBIR" personName={homeData.name} description="How GAMER-CORP Discord bot was built." siteUrl={homeData.siteUrl} lang="en" socials={homeData.socials}>
+  <main class="section-container min-h-[80vh]"><div class="container mx-auto max-w-2xl">
+    <a href="/#projects" class="text-sm text-accent mb-6 inline-block">← Projects</a>
+    <p class="text-[10px] uppercase tracking-widest text-accent font-bold">Case study</p>
+    <h1 class="text-3xl font-heading font-bold text-maintext mb-4">GAMER-CORP BOT</h1>
+    <p class="text-subtext text-sm mb-6" data-en="A Discord bot for Free Fire tools, moderation, and a live community." data-bn="Free Fire টুল, মডারেশন আর কমিউনিটির জন্য Discord বট।">A Discord bot for Free Fire tools, moderation, and a live community.</p>
+    <div class="space-y-5 text-sm text-maintext leading-relaxed">
+      <div>
+        <h2 class="font-heading font-bold mb-1" data-en="Problem" data-bn="সমস্যা">Problem</h2>
+        <p class="text-subtext" data-en="Players wanted UID info and likes without leaving Discord. Mods needed kick, mute, and warn in one bot." data-bn="প্লেয়াররা Discord ছেড়ে UID ইনফো চায়নি। মডদের এক বটেই কিক/মিউট লাগত।">Players wanted UID info and likes without leaving Discord. Mods needed kick, mute, and warn in one bot.</p>
+      </div>
+      <div>
+        <h2 class="font-heading font-bold mb-1" data-en="What I built" data-bn="কী বানিয়েছি">What I built</h2>
+        <p class="text-subtext" data-en="A Discord.js bot with Free Fire commands, moderation, utility, fun commands, and Quran stream. Private code. Public invite." data-bn="Discord.js বট — Free Fire কমান্ড, মডারেশন, ইউটিলিটি, ফান আর কুরআন স্ট্রিম। কোড প্রাইভেট, ইনভাইট পাবলিক।">A Discord.js bot with Free Fire commands, moderation, utility, fun commands, and Quran stream. Private code. Public invite.</p>
+      </div>
+      <div>
+        <h2 class="font-heading font-bold mb-1" data-en="Stack" data-bn="স্ট্যাক">Stack</h2>
+        <p class="text-subtext">Discord.js · Node.js · Free Fire API</p>
+      </div>
+    </div>
+    <a href="https://discord.com/oauth2/authorize?client_id=1362868759395569674&permissions=8&integration_type=0&scope=bot+applications.commands" class="mt-8 inline-block px-5 py-2.5 rounded-lg bg-accent/20 border border-accent/40 text-sm font-semibold">Add to Server</a>
+  </div></main>
+</Layout>

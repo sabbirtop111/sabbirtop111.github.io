@@ -1,0 +1,12 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import homeData from '../../data/home.json';
+import Extra from '../../components/ff-extra-card.astro';
+const tool = { id: "access", badge: "Token", badgeBn: "টোকেন", title: "Access to Token", titleBn: "অ্যাক্সেস থেকে টোকেন", text: "Paste an access token. The address stays hidden.", textBn: "অ্যাক্সেস টোকেন দাও। ঠিকানা দেখাবে না।", button: "Convert", buttonBn: "বদলাও", tone: "text-emerald-300 bg-emerald-400/10 border-emerald-400/20", fields: [{ name: "access_token", label: "Access token", labelBn: "অ্যাক্সেস টোকেন", placeholder: "Paste token", tag: "textarea" }] };
+---
+<Layout title="Access to Token | GAMER SABBIR" personName={homeData.name} description="Turn an access token into a game token." siteUrl={homeData.siteUrl} lang="en" socials={homeData.socials}>
+  <main class="section-container min-h-[80vh]"><div class="container mx-auto max-w-3xl">
+    <a href="/#tools" class="text-sm text-accent mb-6 inline-block">← Home</a>
+    <Extra tool={tool} />
+  </div></main>
+</Layout>
